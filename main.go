@@ -15,7 +15,6 @@ func ParseConfig() {
 	if err := Cfg.Parse() ; err != nil {
 		fmt.Printf( "Error: %v\n", err )
 		Usage()
-		os.Exit(1)
 	}
 }
 
@@ -31,6 +30,11 @@ func ParseConfig() {
  *
  */
 func CheckSanity() {
+	sanity := Sanity{}
+	if err := sanity.Check() ; err != nil {
+		fmt.Printf( "Error: %v\n", err )
+		Usage()
+	}
 }
 
 /*
@@ -62,6 +66,7 @@ OPTIONS:
 	`;
 
 	fmt.Println( usage )
+	os.Exit(1)
 }
 
 /*

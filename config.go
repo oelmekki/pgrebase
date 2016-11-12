@@ -7,9 +7,12 @@ import (
 )
 
 type Config struct {
-	WatchMode   bool
-	DatabaseUrl string
-	SqlDirPath  string
+	WatchMode       bool
+	DatabaseUrl     string
+	SqlDirPath      string
+	FunctionFiles   []string
+	TriggerFiles    []string
+	ViewFiles       []string
 }
 
 /*
@@ -21,6 +24,14 @@ func ( config *Config ) Parse() ( err error ) {
 	if err = config.parseSqlDir() ; err != nil { return err }
 
 	return
+}
+
+/*
+ * Scan sql directory for sql files
+ */
+func ( config *Config ) ScanFiles() {
+	sourceWalker := SourceWalker{ Config: config }
+	sourceWalker.Process()
 }
 
 /*
