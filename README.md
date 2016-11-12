@@ -102,3 +102,10 @@ DATABASE_URL=your_config ./pgrebase ./sql
   named after (with the exception of trigger files declaring the function they
   use). Hazardous results will ensue if it's not the case: only the first
   definition will be dropped, but the whole file will be loaded in pg.
+
+
+## Credits
+
+PgRebase was born after discussing with Derek Sivers about moving business logic
+to the database. Make sure to read [his research](https://sivers.org/pg), it's
+awesome!
