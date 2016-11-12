@@ -90,11 +90,11 @@ func ( view *View ) Load() ( err error ) {
 }
 
 /*
- * Parse view for name and signature
+ * Parse view for name
  */
 func ( view *View ) Parse() ( err error ) {
-	signatureFinder := regexp.MustCompile( `(?is)CREATE(?: OR REPLACE)? VIEW (\S+)` )
-	subMatches := signatureFinder.FindStringSubmatch( view.Definition )
+	nameFinder := regexp.MustCompile( `(?is)CREATE(?: OR REPLACE)? VIEW (\S+)` )
+	subMatches := nameFinder.FindStringSubmatch( view.Definition )
 
 	if len( subMatches ) < 2 {
 		return fmt.Errorf( "Can't find a view in %s", view.Path )

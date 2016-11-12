@@ -3,9 +3,6 @@
 PgRebase is a tool that allows you to easily handle your postgres codebase for
 functions, triggers and views.
 
-> Note: this is a in progress project, see the TODO section at the end 
-> of this page to see what is actually implemented
-
 
 ## Why
 
@@ -89,9 +86,19 @@ DATABASE_URL=your_config ./pgrebase ./sql
 ```
 
 
-## TODO
+## Caveats
 
-* [x] handle functions
-* [x] handle views
-* [ ] handle triggers
-* [x] add watch mode
+* pgrebase doesn't keep any state about your codebase and does not delete what
+  is in your database and is not in your codebase. This means that if you want
+  to remove a trigger/view/function, deleting its file is not enough. You have
+  to use your usual way to migrate db and remove it.
+
+* trigger files should contain both trigger creation and the function it uses.
+  This is to avoid dropping function still used by trigger (if processing
+  functions first) or create trigger before its function (if triggers are
+  processed first)
+
+* files should only contain the definition of the view/function/trigger they're
+  named after (with the exception of trigger files declaring the function they
+  use). Hazardous results will ensue if it's not the case: only the first
+  definition will be dropped, but the whole file will be loaded in pg.
