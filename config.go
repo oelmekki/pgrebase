@@ -10,6 +10,7 @@ type Config struct {
 	WatchMode       bool
 	DatabaseUrl     string
 	SqlDirPath      string
+	MaxConnection   int
 	FunctionFiles   []string
 	TriggerFiles    []string
 	ViewFiles       []string
@@ -19,8 +20,8 @@ type Config struct {
  * Retrieve configuration from command line options
  */
 func ( config *Config ) Parse() ( err error ) {
-	if err = config.checkWatchMode() ; err != nil { return err }
 	if err = config.parseDatabaseUrl() ; err != nil { return err }
+	if err = config.parseFlags() ; err != nil { return err }
 	if err = config.parseSqlDir() ; err != nil { return err }
 
 	return
@@ -35,11 +36,18 @@ func ( config *Config ) ScanFiles() {
 }
 
 /*
- * Check if we should exit or keep watching for fs change
+ * Parse options
  */
-func ( config *Config ) checkWatchMode() ( err error ) {
+func ( config *Config ) parseFlags() ( err error ) {
 	flag.BoolVar( &config.WatchMode, "w", false, "Keep watching for filesystem change" )
+	flag.IntVar( &config.MaxConnection, "n", 0, "Maximum number of connection (default: pg max_conn / 2)" )
 	flag.Parse()
+
+	if config.MaxConnection == 0 {
+		config.MaxConnection, err = FindMaxConnection()
+		if err != nil { return err }
+		if config.MaxConnection == 0 { return fmt.Errorf( "Can't find max connection for postgres" ) }
+	}
 
 	if config.WatchMode {
 	 return fmt.Errorf( "Watch mode is not supported for now" )
@@ -65,7 +73,7 @@ func ( config *Config ) parseDatabaseUrl() ( err error ) {
  * Retrieve sql source directory
  */
 func ( config *Config ) parseSqlDir() ( err error ) {
-	if len( os.Args ) == 1 || ( config.WatchMode && len( os.Args ) == 2 ) {
+	if len( os.Args ) == 1 {
 		return fmt.Errorf( "You must provide a sql directory" )
 	}
 
