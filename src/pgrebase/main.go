@@ -81,7 +81,7 @@ OPTIONS:
 func Process() ( err error ) {
 	if err = LoadFunctions() ; err != nil { return err }
 	// if err = LoadTriggers() ; err != nil { return err }
-	// if err = LoadViews() ; err != nil { return err }
+	if err = LoadViews() ; err != nil { return err }
 
 	return
 }

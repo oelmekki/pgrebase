@@ -92,6 +92,6 @@ DATABASE_URL=your_config ./pgrebase ./sql
 ## TODO
 
 * [x] handle functions
-* [ ] handle views
+* [x] handle views
 * [ ] handle triggers
 * [x] add watch mode
