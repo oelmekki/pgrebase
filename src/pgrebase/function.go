@@ -36,6 +36,7 @@ type Function struct {
 	Name            string
 	Signature       string
 	Definition      string
+	previousExists  bool
 	parseSignature  bool
 }
 
@@ -45,6 +46,7 @@ type Function struct {
 func ( function *Function ) Process( errChan chan error ) {
 	var err error
 
+	fmt.Printf( "Processing %s\n", function.Path )
 	if err = function.Load() ; err != nil { errChan <- err ; return }
 	if err = function.Parse() ; err != nil { errChan <- err ; return }
 	if err = function.Drop() ; err != nil { errChan <- err ; return }
@@ -68,7 +70,7 @@ func ( function *Function ) Load() ( err error ) {
  * Parse function for name and signature
  */
 func ( function *Function ) Parse() ( err error ) {
-	signatureFinder := regexp.MustCompile( `(?is)CREATE(?: OR REPLACE) FUNCTION (\S+?)\((.*?)\)` )
+	signatureFinder := regexp.MustCompile( `(?is)CREATE(?: OR REPLACE)? FUNCTION (\S+?)\((.*?)\)` )
 	subMatches := signatureFinder.FindStringSubmatch( function.Definition )
 
 	if len( subMatches ) < 3 {
@@ -80,7 +82,7 @@ func ( function *Function ) Parse() ( err error ) {
 	if function.parseSignature {
 		function.Signature = subMatches[2]
 	} else {
-		function.Signature, err = function.previousSignature()
+		function.Signature, function.previousExists, err = function.previousSignature()
 		if err != nil { return err }
 	}
 
@@ -91,7 +93,7 @@ func ( function *Function ) Parse() ( err error ) {
  * Drop existing function from pg
  */
 func ( function *Function ) Drop() ( err error ) {
-	if len( function.Signature ) > 0 {
+	if function.previousExists {
 		rows, err := Query( `DROP FUNCTION IF EXISTS ` + function.Name + `(` + function.Signature + `)` )
 		if err != nil { return err }
 		rows.Close()
@@ -113,17 +115,19 @@ func ( function *Function ) Create() ( err error ) {
 /*
  * Retrieve old signature from function in database, if any
  */
-func ( function *Function ) previousSignature() ( signature string, err error ) {
+func ( function *Function ) previousSignature() ( signature string, exists bool, err error ) {
 	rows, err := Query( `SELECT pg_get_functiondef(oid) FROM pg_proc WHERE proname = $1`, function.Name )
-	if err != nil { return signature, err }
+	if err != nil { return }
 	defer rows.Close()
 
 	if rows.Next() {
+		exists = true
+
 		var body string
-		if err = rows.Scan( &body ) ; err != nil { return signature, err }
+		if err = rows.Scan( &body ) ; err != nil { return }
 		oldFunction := Function{ Definition: body, parseSignature: true }
-		if err = oldFunction.Parse() ; err != nil { return signature, err }
-		return oldFunction.Signature, nil
+		if err = oldFunction.Parse() ; err != nil { return }
+		signature = oldFunction.Signature
 	}
 
 	return

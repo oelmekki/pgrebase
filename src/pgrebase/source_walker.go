@@ -3,7 +3,6 @@ package main
 import (
 	"path/filepath"
 	"os"
-	"regexp"
 )
 
 type SourceWalker struct {
@@ -46,12 +45,11 @@ func ( walker *SourceWalker ) findViews() ( paths []string ) {
  * Walk a directory to find sql files
  */
 func ( walker *SourceWalker ) sqlFilesIn( path string ) ( paths []string ) {
-	isSqlFile := regexp.MustCompile( `.*\.sql$` )
-
 	filepath.Walk( path, func( path string, info os.FileInfo, err error ) error {
-		if isSqlFile.MatchString( path ) {
+		if IsSqlFile( path ) {
 			paths = append( paths, path )
 		}
+
 		return nil
 	})
 

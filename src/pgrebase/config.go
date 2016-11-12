@@ -31,6 +31,10 @@ func ( config *Config ) Parse() ( err error ) {
  * Scan sql directory for sql files
  */
 func ( config *Config ) ScanFiles() {
+	config.FunctionFiles = make( []string, 0 )
+	config.TriggerFiles = make( []string, 0 )
+	config.ViewFiles = make( []string, 0 )
+
 	sourceWalker := SourceWalker{ Config: config }
 	sourceWalker.Process()
 }
@@ -47,10 +51,6 @@ func ( config *Config ) parseFlags() ( err error ) {
 		config.MaxConnection, err = FindMaxConnection()
 		if err != nil { return err }
 		if config.MaxConnection == 0 { return fmt.Errorf( "Can't find max connection for postgres" ) }
-	}
-
-	if config.WatchMode {
-	 return fmt.Errorf( "Watch mode is not supported for now" )
 	}
 
 	return

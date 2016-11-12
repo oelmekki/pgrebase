@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"log"
 )
 
 var Cfg Config
@@ -84,6 +85,50 @@ func Process() ( err error ) {
 	return
 }
 
+/*
+ * Fire a watcher, will die as soon something changed
+ */
+func StartWatching( errorChan chan error, doneChan chan bool ) ( err error ) {
+	watcher := Watcher{ Done: doneChan, Error: errorChan }
+	go watcher.Start()
+
+	return
+}
+
+/*
+ * Process events from watchers
+ */
+func WatchTheWatcher() {
+	fmt.Printf( "Watching filesystem for changes... %s\n", Cfg.SqlDirPath )
+
+	errorChan := make( chan error )
+	doneChan := make( chan bool )
+	building := false
+
+	if err := StartWatching( errorChan, doneChan ) ; err != nil { log.Fatal( err ) }
+
+	for {
+		select {
+			case <-doneChan:
+				Cfg.ScanFiles()
+
+				if ! building {
+					building = true
+					if err := Process() ; err != nil {
+						fmt.Printf( "Error: %v\n", err )
+					}
+					building = false
+				}
+
+				if err := StartWatching( errorChan, doneChan ) ; err != nil { log.Fatal( err ) }
+
+			case err := <-errorChan:
+				fmt.Printf( "Error: %v\n", err )
+				if err := StartWatching( errorChan, doneChan ) ; err != nil { log.Fatal( err ) }
+		}
+	}
+}
+
 func main() {
 	ParseConfig()
 	CheckSanity()
@@ -91,5 +136,9 @@ func main() {
 	if err := Process() ; err != nil {
 		fmt.Printf( "Error: %v\n", err )
 		os.Exit(1)
+	}
+
+	if Cfg.WatchMode {
+		WatchTheWatcher()
 	}
 }
