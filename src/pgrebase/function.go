@@ -10,6 +10,9 @@ import (
  * Load or reload all functions found in FS.
  */
 func LoadFunctions() ( err error ) {
+	successfulCount := len( Cfg.FunctionFiles )
+	errors := make( []string, 0 )
+
 	for i := 0 ; i < len( Cfg.FunctionFiles ) ; i += Cfg.MaxConnection {
 		next := Cfg.MaxConnection
 		rest := len( Cfg.FunctionFiles ) - i
@@ -24,11 +27,31 @@ func LoadFunctions() ( err error ) {
 
 		for j := 0 ; j < i + next ; j++ {
 			err = <-errChan
-			if err != nil { return err }
+			if err != nil {
+				successfulCount--;
+				errors = append( errors, fmt.Sprintf( "%v\n", err ) )
+			}
 		}
 	}
 
+	FunctionsReport( successfulCount, errors )
+
 	return
+}
+
+/*
+ * Pretty print of function loading result
+ */
+func FunctionsReport( successfulCount int, errors []string ) {
+	fmt.Printf( "Loaded %d functions", successfulCount )
+	if successfulCount < len( Cfg.FunctionFiles ) {
+		fmt.Printf( " - %d with error", len( Cfg.FunctionFiles ) - successfulCount )
+	}
+	fmt.Printf( "\n" )
+
+	for _, err := range errors {
+		fmt.Printf( err )
+	}
 }
 
 type Function struct {
@@ -46,11 +69,12 @@ type Function struct {
 func ( function *Function ) Process( errChan chan error ) {
 	var err error
 
-	fmt.Printf( "Processing %s\n", function.Path )
-	if err = function.Load() ; err != nil { errChan <- err ; return }
-	if err = function.Parse() ; err != nil { errChan <- err ; return }
-	if err = function.Drop() ; err != nil { errChan <- err ; return }
-	if err = function.Create() ; err != nil { errChan <- err ; return }
+	errFmt := "  error while loading %s\n  %v\n"
+
+	if err = function.Load() ; err != nil { errChan <- fmt.Errorf( errFmt, function.Path, err ) ; return }
+	if err = function.Parse() ; err != nil { errChan <- fmt.Errorf( errFmt, function.Path, err ) ; return }
+	if err = function.Drop() ; err != nil { errChan <- fmt.Errorf( errFmt, function.Path, err ) ; return }
+	if err = function.Create() ; err != nil { errChan <- fmt.Errorf( errFmt, function.Path, err ) ; return }
 
 	errChan <- err
 }

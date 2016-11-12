@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"log"
+	"time"
 )
 
 var Cfg Config
@@ -99,25 +100,21 @@ func StartWatching( errorChan chan error, doneChan chan bool ) ( err error ) {
  * Process events from watchers
  */
 func WatchTheWatcher() {
-	fmt.Printf( "Watching filesystem for changes... %s\n", Cfg.SqlDirPath )
+	fmt.Println( "Watching filesystem for changes..." )
 
 	errorChan := make( chan error )
 	doneChan := make( chan bool )
-	building := false
 
 	if err := StartWatching( errorChan, doneChan ) ; err != nil { log.Fatal( err ) }
 
 	for {
 		select {
 			case <-doneChan:
+				time.Sleep( 300 * time.Millisecond ) // without this, new file watcher is started faster than file writing has ended
 				Cfg.ScanFiles()
 
-				if ! building {
-					building = true
-					if err := Process() ; err != nil {
-						fmt.Printf( "Error: %v\n", err )
-					}
-					building = false
+				if err := Process() ; err != nil {
+					fmt.Printf( "Error: %v\n", err )
 				}
 
 				if err := StartWatching( errorChan, doneChan ) ; err != nil { log.Fatal( err ) }

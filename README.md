@@ -69,12 +69,13 @@ Loaded 5 triggers - 1 trigger with error
   error while loading sql/triggers/user_updated_at.sql
   column users.updated_at does not exist
 
+
 $ ./pgrebase -w sql/
 Loaded 10 functions
 Loaded 25 views
 Loaded 6 triggers
 Watching filesystem for changes...
-sql/functions/create_user.sql changed. Building.
+FS changed. Building.
 ```
 
 When working in development environment, you'll probably want to use watch mode

@@ -21,7 +21,6 @@ func Query( query string, parameters ...interface{} ) ( rows *sql.Rows, err erro
 
 	rows, err = co.Query( query, parameters... )
 	if err != nil {
-		fmt.Printf( "Can't execute query : %v\n%v\n", query, err )
 		return rows, err
 	}
 
