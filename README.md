@@ -40,22 +40,21 @@ sql/
 No need to add drop statement in those files, PgRebase will take care of it.
 
 
-## Install
+## Build
 
-Just clone the directory and run inside it:
+PgRebase use [gb](https://getgb.io/) as a building tool.
+
+To build it:
 
 ```
-go build -o bin/pgrebase .
+go get github.com/constabulary/gb/...  # if you don't have gb yet
+gb build all
 ```
 
-If you don't want to install golang, a prebuilt binary for linux/amd64 can be
-found in `bin/` (built with golang-1.6.2).
+Binary will be in `bin/pgrebase`.
 
-Copy the downloaded or built binary in your favorite place to execute it.
-
-> Note: If you're used to golang, you can install pgrebase just the usual way
->
-> `go get github.com/oelmekki/pgrebase`
+If you don't want to build the project, a binary for linux/amd64 is already
+there.
 
 
 ## Usage
