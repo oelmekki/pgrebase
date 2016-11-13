@@ -37,18 +37,14 @@ sql/
 No need to add drop statement in those files, PgRebase will take care of it.
 
 
-## Build
-
-PgRebase use [gb](https://getgb.io/) as a building tool.
-
-To build it:
+## Install
 
 ```
-go get github.com/constabulary/gb/...  # if you don't have gb yet
-gb build all
+go get github.com/oelmekki/pgbrebase
 ```
 
-Binary will be in `bin/pgrebase`.
+Binary will be in `$GO_PATH/bin/pgrebase`. This is a static binary,
+so it's safe to copy it in your project.
 
 If you don't want to build the project, a binary for linux/amd64 is already
 there.
