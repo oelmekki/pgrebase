@@ -26,25 +26,3 @@ func Query( query string, parameters ...interface{} ) ( rows *sql.Rows, err erro
 
 	return
 }
-
-/*
- * Find a sensible default for max connections.
- *
- * We don't want to just use pg max conn, because some other
- * clients may be using it, so we'll take half that number.
- *
- * This will be useful for concurrently loading sql files.
- */
-func FindMaxConnection() ( max int, err error ) {
-	rows, err := Query( `SELECT setting FROM pg_settings WHERE name = 'max_connections'` )
-	if err != nil { return max, err }
-	defer rows.Close()
-
-	if rows.Next() {
-		if err = rows.Scan( &max ) ; err != nil { return max, err }
-	}
-
-	max = max / 2
-
-	return
-}

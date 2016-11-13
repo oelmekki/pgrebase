@@ -13,24 +13,13 @@ func LoadTriggers() ( err error ) {
 	successfulCount := len( Cfg.TriggerFiles )
 	errors := make( []string, 0 )
 
-	for i := 0 ; i < len( Cfg.TriggerFiles ) ; i += Cfg.MaxConnection {
-		next := Cfg.MaxConnection
-		rest := len( Cfg.TriggerFiles ) - i
-		if rest < next { next = rest }
 
-		errChan := make( chan error )
-
-		for _, file := range Cfg.TriggerFiles[i:i+next] {
-			trigger := Trigger{ Path: file }
-			go trigger.Process( errChan )
-		}
-
-		for j := 0 ; j < i + next ; j++ {
-			err = <-errChan
-			if err != nil {
-				successfulCount--;
-				errors = append( errors, fmt.Sprintf( "%v\n", err ) )
-			}
+	for _, file := range Cfg.TriggerFiles {
+		trigger := Trigger{ Path: file }
+		err = trigger.Process()
+		if err != nil {
+			successfulCount--;
+			errors = append( errors, fmt.Sprintf( "%v\n", err ) )
 		}
 	}
 
@@ -67,17 +56,15 @@ type Trigger struct {
 /*
  * Create or update a trigger found in FS
  */
-func ( trigger *Trigger ) Process( errChan chan error ) {
-	var err error
-
+func ( trigger *Trigger ) Process() ( err error ) {
 	errFmt := "  error while loading %s\n  %v\n"
 
-	if err = trigger.Load() ; err != nil { errChan <- fmt.Errorf( errFmt, trigger.Path, err ) ; return }
-	if err = trigger.Parse() ; err != nil { errChan <- fmt.Errorf( errFmt, trigger.Path, err ) ; return }
-	if err = trigger.Drop() ; err != nil { errChan <- fmt.Errorf( errFmt, trigger.Path, err ) ; return }
-	if err = trigger.Create() ; err != nil { errChan <- fmt.Errorf( errFmt, trigger.Path, err ) ; return }
+	if err = trigger.Load() ; err != nil { return fmt.Errorf( errFmt, trigger.Path, err ) }
+	if err = trigger.Parse() ; err != nil { return fmt.Errorf( errFmt, trigger.Path, err ) }
+	if err = trigger.Drop() ; err != nil { return fmt.Errorf( errFmt, trigger.Path, err ) }
+	if err = trigger.Create() ; err != nil { return fmt.Errorf( errFmt, trigger.Path, err ) }
 
-	errChan <- err
+	return
 }
 
 /*

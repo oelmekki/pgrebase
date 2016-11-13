@@ -13,24 +13,13 @@ func LoadViews() ( err error ) {
 	successfulCount := len( Cfg.ViewFiles )
 	errors := make( []string, 0 )
 
-	for i := 0 ; i < len( Cfg.ViewFiles ) ; i += Cfg.MaxConnection {
-		next := Cfg.MaxConnection
-		rest := len( Cfg.ViewFiles ) - i
-		if rest < next { next = rest }
 
-		errChan := make( chan error )
-
-		for _, file := range Cfg.ViewFiles[i:i+next] {
-			view := View{ Path: file }
-			go view.Process( errChan )
-		}
-
-		for j := 0 ; j < i + next ; j++ {
-			err = <-errChan
-			if err != nil {
-				successfulCount--;
-				errors = append( errors, fmt.Sprintf( "%v\n", err ) )
-			}
+	for _, file := range Cfg.ViewFiles {
+		view := View{ Path: file }
+		err = view.Process()
+		if err != nil {
+			successfulCount--;
+			errors = append( errors, fmt.Sprintf( "%v\n", err ) )
 		}
 	}
 
@@ -65,17 +54,15 @@ type View struct {
 /*
  * Create or update a view found in FS
  */
-func ( view *View ) Process( errChan chan error ) {
-	var err error
-
+func ( view *View ) Process() ( err error ) {
 	errFmt := "  error while loading %s\n  %v\n"
 
-	if err = view.Load() ; err != nil { errChan <- fmt.Errorf( errFmt, view.Path, err ) ; return }
-	if err = view.Parse() ; err != nil { errChan <- fmt.Errorf( errFmt, view.Path, err ) ; return }
-	if err = view.Drop() ; err != nil { errChan <- fmt.Errorf( errFmt, view.Path, err ) ; return }
-	if err = view.Create() ; err != nil { errChan <- fmt.Errorf( errFmt, view.Path, err ) ; return }
+	if err = view.Load() ; err != nil { return fmt.Errorf( errFmt, view.Path, err ) }
+	if err = view.Parse() ; err != nil { return fmt.Errorf( errFmt, view.Path, err ) }
+	if err = view.Drop() ; err != nil { return fmt.Errorf( errFmt, view.Path, err ) }
+	if err = view.Create() ; err != nil { return fmt.Errorf( errFmt, view.Path, err ) }
 
-	errChan <- err
+	return
 }
 
 /*

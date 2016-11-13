@@ -10,7 +10,6 @@ type Config struct {
 	WatchMode       bool
 	DatabaseUrl     string
 	SqlDirPath      string
-	MaxConnection   int
 	FunctionFiles   []string
 	TriggerFiles    []string
 	ViewFiles       []string
@@ -44,14 +43,7 @@ func ( config *Config ) ScanFiles() {
  */
 func ( config *Config ) parseFlags() ( err error ) {
 	flag.BoolVar( &config.WatchMode, "w", false, "Keep watching for filesystem change" )
-	flag.IntVar( &config.MaxConnection, "n", 0, "Maximum number of connection (default: pg max_conn / 2)" )
 	flag.Parse()
-
-	if config.MaxConnection == 0 {
-		config.MaxConnection, err = FindMaxConnection()
-		if err != nil { return err }
-		if config.MaxConnection == 0 { return fmt.Errorf( "Can't find max connection for postgres" ) }
-	}
 
 	return
 }

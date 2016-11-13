@@ -65,10 +65,6 @@ OPTIONS:
 	-w: enter watch mode.
 		In watch mode, pgrebase will keep watching for file changes and will
 		automatically reload your sql code when it happens.
-
-	-n <num>: max concurrency
-	  Specifies a number of maximum files to be loaded concurrently.
-		Default: pg max connections / 2
 	`;
 
 	fmt.Println( usage )
