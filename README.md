@@ -46,8 +46,8 @@ go get github.com/oelmekki/pgbrebase
 Binary will be in `$GO_PATH/bin/pgrebase`. This is a static binary,
 so it's safe to copy it in your project.
 
-If you don't want to build the project, a binary for linux/amd64 is already
-there.
+You can also download prebuilt PgRelease [from release page](https://github.com/oelmekki/pgrebase/releases/)
+(only for linux/amd64).
 
 
 ## Usage
