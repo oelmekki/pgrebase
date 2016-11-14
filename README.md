@@ -109,6 +109,14 @@ DATABASE_URL=your_config ./pgrebase ./sql
   definition will be dropped, but the whole file will be loaded in pg.
 
 
+## Any issue?
+
+Pgrebase is a fairly recent project. I already use it on production and it works
+fine for me, but given I'm probably its only user for now, it's probably biased
+toward how I write my sql code. If you find any problem while parsing your sql
+code, please [let me know](https://github.com/oelmekki/pgrebase/issues)!
+
+
 ## Credits
 
 PgRebase was born after discussing with Derek Sivers about moving business logic
