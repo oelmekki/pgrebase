@@ -45,7 +45,7 @@ func CheckSanity() {
 func Usage() {
 	usage := `
 USAGE:
-	DATABASE_URL=url pgrebase [-w] [-n <num>] <sql_directory>
+	DATABASE_URL=url pgrebase [-w] <sql_directory>
 
 PgRebase is a tool that allows you to easily handle your postgres codebase for
 functions, triggers and views.
