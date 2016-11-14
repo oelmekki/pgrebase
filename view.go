@@ -67,7 +67,7 @@ func ( view *View ) Parse() ( err error ) {
  * Drop existing view from pg
  */
 func ( view *View ) Drop() ( err error ) {
-	return view.CodeUnit.Drop( `DROP VIEW IF EXISTS ` + view.Name + ` CASCADE` )
+	return view.CodeUnit.Drop( `DROP VIEW IF EXISTS ` + view.Name )
 }
 
 /*

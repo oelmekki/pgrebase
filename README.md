@@ -151,6 +151,15 @@ dependencies?" message and you will have to figure it out for yourself).
   the first definition will be dropped, but the whole file will be loaded in
   pg.
 
+* pgrebase single top concern is to not delete any data. This means that no
+  DROP will CASCADE. This means that if your database structure depends on
+  anything defined in pgrebase codebase, it will fail to reload it when it
+  implies dropping it (that is, most of the time). An important implication of
+  that is that you should not add types in pgrebase codebase if they are used
+  as column types in your tables. For those, declare your types using your
+  usual migration technique. To be more clear: only define here types that are
+  only used by your functions/views/triggers.
+
 
 ## Any issue?
 

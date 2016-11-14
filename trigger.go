@@ -73,7 +73,7 @@ func ( trigger *Trigger ) Parse() ( err error ) {
  * Drop existing trigger from pg
  */
 func ( trigger *Trigger ) Drop() ( err error ) {
-	err = trigger.CodeUnit.Drop( `DROP TRIGGER IF EXISTS ` + trigger.Name + ` ON ` + trigger.Table + ` CASCADE` )
+	err = trigger.CodeUnit.Drop( `DROP TRIGGER IF EXISTS ` + trigger.Name + ` ON ` + trigger.Table )
 	if err != nil { return err }
 
 	return trigger.Function.Drop()
