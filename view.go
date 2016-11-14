@@ -25,7 +25,7 @@ func LoadViews() ( err error ) {
 		}
 	}
 
-	Report( "triggers", successfulCount, len( Cfg.ViewFiles ), errors )
+	Report( "views", successfulCount, len( Cfg.ViewFiles ), errors )
 
 	return
 }
