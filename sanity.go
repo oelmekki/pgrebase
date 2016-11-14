@@ -32,12 +32,12 @@ func ( sanity *Sanity ) directoryExists() ( err error ) {
 }
 
 /*
- * At least one of functions/, views/, triggers/ should exist
+ * At least one of functions/, views/, triggers/, types/ should exist
  */
 func ( sanity *Sanity ) typedDirExists() ( err error ) {
 	directories := make( []string, 0 )
 
-	for _, typedDir := range []string{ "functions", "triggers", "views" } {
+	for _, typedDir := range []string{ "functions", "triggers", "types", "views" } {
 		path := Cfg.SqlDirPath + "/" + typedDir
 		if IsDir( path ) {
 			directories = append( directories, path )
@@ -45,18 +45,7 @@ func ( sanity *Sanity ) typedDirExists() ( err error ) {
 	}
 
 	if len( directories ) == 0 {
-		return fmt.Errorf( "No functions/, triggers/, or views/ directory found in %s", Cfg.SqlDirPath )
-	}
-
-	functionsExist := false
-	for _, name := range directories {
-		if name == Cfg.SqlDirPath + "/functions" {
-			functionsExist = true
-		}
-	}
-
-	if ! functionsExist {
-		return fmt.Errorf( "Only functions/ is supported for now." )
+		return fmt.Errorf( "No functions/, triggers/, types/ or views/ directory found in %s", Cfg.SqlDirPath )
 	}
 
 	return

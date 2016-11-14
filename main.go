@@ -26,9 +26,10 @@ func ParseConfig() {
  * <sql_dir>/
  *   functions/
  *   triggers/
+ *   types/
  *   views/
  *
- * At least one of functions/triggers/views/ should exist.
+ * At least one of functions/triggers/types/views/ should exist.
  *
  */
 func CheckSanity() {
@@ -44,13 +45,13 @@ func CheckSanity() {
  */
 func Usage() {
 	usage := `
-PgRebase-1.0.1
+PgRebase-1.0.1+
 
 USAGE:
 	DATABASE_URL=url pgrebase [-w] <sql_directory>
 
 PgRebase is a tool that allows you to easily handle your postgres codebase for
-functions, triggers and views.
+functions, triggers, types and views.
 
 Your expected to provide a postgresql connection url as DATABASE_URL and
 a sql directory as <sql_directory>.
@@ -59,9 +60,10 @@ a sql directory as <sql_directory>.
 	<sql_directory>/
 	├── functions/
 	├── triggers/
+	├── types/
 	└── views/
 
-At least one of functions/triggers/views/ should exist.
+At least one of functions/triggers/types/views should exist.
 
 OPTIONS:
 	-w: enter watch mode.
@@ -77,8 +79,9 @@ OPTIONS:
  * Start the actual work
  */
 func Process() ( err error ) {
+	if err = LoadTypes() ; err != nil { return err }
 	if err = LoadFunctions() ; err != nil { return err }
-	 if err = LoadTriggers() ; err != nil { return err }
+	if err = LoadTriggers() ; err != nil { return err }
 	if err = LoadViews() ; err != nil { return err }
 
 	return

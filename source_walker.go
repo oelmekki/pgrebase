@@ -15,6 +15,7 @@ type SourceWalker struct {
 func ( walker *SourceWalker ) Process() {
 	walker.Config.FunctionFiles = walker.findFunctions()
 	walker.Config.TriggerFiles = walker.findTriggers()
+	walker.Config.TypeFiles = walker.findTypes()
 	walker.Config.ViewFiles = walker.findViews()
 
 	return
@@ -32,6 +33,13 @@ func ( walker *SourceWalker ) findFunctions() ( paths []string ) {
  */
 func ( walker *SourceWalker ) findTriggers() ( paths []string ) {
 	return walker.sqlFilesIn( walker.Config.SqlDirPath + "/triggers" )
+}
+
+/*
+ * Find path of type files
+ */
+func ( walker *SourceWalker ) findTypes() ( paths []string ) {
+	return walker.sqlFilesIn( walker.Config.SqlDirPath + "/types" )
 }
 
 /*

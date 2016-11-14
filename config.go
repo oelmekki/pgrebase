@@ -12,6 +12,7 @@ type Config struct {
 	SqlDirPath      string
 	FunctionFiles   []string
 	TriggerFiles    []string
+	TypeFiles       []string
 	ViewFiles       []string
 }
 
@@ -32,6 +33,7 @@ func ( config *Config ) Parse() ( err error ) {
 func ( config *Config ) ScanFiles() {
 	config.FunctionFiles = make( []string, 0 )
 	config.TriggerFiles = make( []string, 0 )
+	config.TypeFiles = make( []string, 0 )
 	config.ViewFiles = make( []string, 0 )
 
 	sourceWalker := SourceWalker{ Config: config }
