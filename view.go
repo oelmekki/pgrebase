@@ -80,7 +80,7 @@ func ( view *View ) Load() ( err error ) {
  * Parse view for name
  */
 func ( view *View ) Parse() ( err error ) {
-	nameFinder := regexp.MustCompile( `(?is)CREATE(?: OR REPLACE)? VIEW (\S+)` )
+	nameFinder := regexp.MustCompile( `(?is)CREATE(?:\s+OR\s+REPLACE)?\s+VIEW\s+(\S+)` )
 	subMatches := nameFinder.FindStringSubmatch( view.Definition )
 
 	if len( subMatches ) < 2 {

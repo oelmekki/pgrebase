@@ -82,7 +82,7 @@ func ( trigger *Trigger ) Load() ( err error ) {
  * Parse trigger for name and signature
  */
 func ( trigger *Trigger ) Parse() ( err error ) {
-	triggerFinder := regexp.MustCompile( `(?is)CREATE(?: CONSTRAINT)? TRIGGER (\S+).*?ON (\S+)` )
+	triggerFinder := regexp.MustCompile( `(?is)CREATE(?:\s+CONSTRAINT)?\s+TRIGGER\s+(\S+).*?ON\s+(\S+)` )
 	subMatches := triggerFinder.FindStringSubmatch( trigger.Definition )
 
 	if len( subMatches ) < 3 {

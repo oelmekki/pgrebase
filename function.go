@@ -81,7 +81,7 @@ func ( function *Function ) Load() ( err error ) {
  * Parse function for name and signature
  */
 func ( function *Function ) Parse() ( err error ) {
-	signatureFinder := regexp.MustCompile( `(?is)CREATE(?: OR REPLACE)? FUNCTION (\S+?)\((.*?)\)` )
+	signatureFinder := regexp.MustCompile( `(?is)CREATE(?:\s+OR\s+REPLACE)?\s+FUNCTION\s+(\S+?)\((.*?)\)` )
 	subMatches := signatureFinder.FindStringSubmatch( function.Definition )
 
 	if len( subMatches ) < 3 {
