@@ -9,9 +9,9 @@ functions, triggers and views.
 If you started outsourcing data manipulation to your database through
 postgresql cool features, you probably realized this is painful. Postgresql's
 functions, triggers and views are not your usual codebase, they live in
-postgres, and you often have to drop your them if you want to edit them, eg
-when you change a function signature. You could edit them directly in psql, but
-then it's migrating servers / other devs installation that becomes difficult.
+postgres, and you often have to drop them if you want to edit them, eg when you
+change a function signature. You could edit them directly in psql, but then
+it's migrating servers / other devs installation that becomes difficult.
 
 The classic tool for this is the migration software, asking you to manage
 migration files. This is great for handling tables, not so great to make
