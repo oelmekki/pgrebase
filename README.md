@@ -7,14 +7,15 @@ functions, triggers and views.
 ## Why
 
 If you started outsourcing data manipulation to your database through
-postgresql cool features, you probably realized this is painful. This is not
-your usual codebase, it lives in postgres, and you often have to drop your
-function/trigger/view if you want to edit it. Migrating servers is not easy
-either.
+postgresql cool features, you probably realized this is painful. Postgresql's
+functions, triggers and views are not your usual codebase, they live in
+postgres, and you often have to drop your them if you want to edit them, eg
+when you change a function signature. You could edit them directly in psql, but
+then it's migrating servers / other devs installation that becomes difficult.
 
-The classic tool for this is to have migration files. This is great for
-handling tables, not so great to make frequent changes to your functions. Can
-we do better?
+The classic tool for this is the migration software, asking you to manage
+migration files. This is great for handling tables, not so great to make
+frequent changes to your functions. Can we do better?
 
 
 ## What
@@ -35,6 +36,13 @@ sql/
 ```
 
 No need to add drop statement in those files, PgRebase will take care of it.
+
+In watch mode (useful for development), just save your file, pgrebase will
+update your database. In normal mode (useful for deployment), pgrebase will
+recreate all functions/triggers/views found in your filesystem directory.
+
+You can now work with postgres codebase live reload, then call pgrebase just
+after your migration task in your deployment pipeline.
 
 
 ## Install
