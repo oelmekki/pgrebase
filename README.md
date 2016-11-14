@@ -40,7 +40,7 @@ No need to add drop statement in those files, PgRebase will take care of it.
 ## Install
 
 ```
-go get github.com/oelmekki/pgbrebase
+go get github.com/oelmekki/pgrebase
 ```
 
 Binary will be in `$GO_PATH/bin/pgrebase`. This is a static binary,
