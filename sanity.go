@@ -66,8 +66,7 @@ func ( sanity *Sanity ) typedDirExists() ( err error ) {
  * No need to process any further if there are no sql files to load
  */
 func ( sanity *Sanity ) sqlFilesPresent() ( err error ) {
-	//if len( Cfg.FunctionFiles ) + len( Cfg.TriggerFiles ) + len( Cfg.ViewFiles ) == 0 {
-	if len( Cfg.FunctionFiles ) == 0 {
+	if len( Cfg.FunctionFiles ) + len( Cfg.TriggerFiles ) + len( Cfg.ViewFiles ) == 0 {
 		return fmt.Errorf( "Didn't find any sql file in %s", Cfg.SqlDirPath )
 	}
 

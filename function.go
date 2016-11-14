@@ -15,55 +15,24 @@ func LoadFunctions() ( err error ) {
 
 
 	for _, file := range Cfg.FunctionFiles {
-		function := Function{ Path: file }
-		err = function.Process()
+		function := Function{}
+		function.Path = file
+
+		err = ProcessUnit( &function, function.Path )
 		if err != nil {
 			successfulCount--;
 			errors = append( errors, fmt.Sprintf( "%v\n", err ) )
 		}
 	}
 
-	FunctionsReport( successfulCount, errors )
+	Report( "functions", successfulCount, len( Cfg.FunctionFiles ), errors )
 
 	return
-}
-
-/*
- * Pretty print of function loading result
- */
-func FunctionsReport( successfulCount int, errors []string ) {
-	fmt.Printf( "Loaded %d functions", successfulCount )
-	if successfulCount < len( Cfg.FunctionFiles ) {
-		fmt.Printf( " - %d with error", len( Cfg.FunctionFiles ) - successfulCount )
-	}
-	fmt.Printf( "\n" )
-
-	for _, err := range errors {
-		fmt.Printf( err )
-	}
 }
 
 type Function struct {
-	Path            string
-	Name            string
-	Signature       string
-	Definition      string
-	previousExists  bool
-	parseSignature  bool
-}
-
-/*
- * Create or update a function found in FS
- */
-func ( function *Function ) Process() ( err error ) {
-	errFmt := "  error while loading %s\n  %v\n"
-
-	if err = function.Load() ; err != nil { return fmt.Errorf( errFmt, function.Path, err ) }
-	if err = function.Parse() ; err != nil { return fmt.Errorf( errFmt, function.Path, err ) }
-	if err = function.Drop() ; err != nil { return fmt.Errorf( errFmt, function.Path, err ) }
-	if err = function.Create() ; err != nil { return fmt.Errorf( errFmt, function.Path, err ) }
-
-	return
+	CodeUnit
+	Signature string
 }
 
 /*
@@ -105,10 +74,9 @@ func ( function *Function ) Parse() ( err error ) {
  */
 func ( function *Function ) Drop() ( err error ) {
 	if function.previousExists {
-		rows, err := Query( `DROP FUNCTION IF EXISTS ` + function.Name + `(` + function.Signature + `)` )
-		if err != nil { return err }
-		rows.Close()
+		return function.CodeUnit.Drop( `DROP FUNCTION IF EXISTS ` + function.Name + `(` + function.Signature + `)` )
 	}
+
 	return
 }
 
@@ -116,11 +84,7 @@ func ( function *Function ) Drop() ( err error ) {
  * Create the function in pg
  */
 func ( function *Function ) Create() ( err error ) {
-	rows, err := Query( function.Definition )
-	if err != nil { return err }
-	rows.Close()
-
-	return
+	return function.CodeUnit.Create( function.Definition )
 }
 
 /*
@@ -136,7 +100,7 @@ func ( function *Function ) previousSignature() ( signature string, exists bool,
 
 		var body string
 		if err = rows.Scan( &body ) ; err != nil { return }
-		oldFunction := Function{ Definition: body, parseSignature: true }
+		oldFunction := Function{ CodeUnit: CodeUnit{ Definition: body, parseSignature: true } }
 		if err = oldFunction.Parse() ; err != nil { return }
 		signature = oldFunction.Signature
 	}

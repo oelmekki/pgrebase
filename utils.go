@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"fmt"
 )
 
 /*
@@ -29,4 +30,19 @@ func IsSqlFile( filePath string ) bool {
 func IsHiddenFile( filePath string ) bool {
 	basename := path.Base( filePath )
 	return string( basename[0] ) == "."
+}
+
+/*
+ * Pretty print the result of an import
+ */
+func Report( name string, successCount, totalCount int, errors []string ) {
+	fmt.Printf( "Loaded %d %s", successCount, name )
+	if successCount < totalCount {
+		fmt.Printf( " - %d with error", totalCount - successCount )
+	}
+	fmt.Printf( "\n" )
+
+	for _, err := range errors {
+		fmt.Printf( err )
+	}
 }

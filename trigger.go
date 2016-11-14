@@ -15,56 +15,25 @@ func LoadTriggers() ( err error ) {
 
 
 	for _, file := range Cfg.TriggerFiles {
-		trigger := Trigger{ Path: file }
-		err = trigger.Process()
+		trigger := Trigger{}
+		trigger.Path = file
+
+		err = ProcessUnit( &trigger, trigger.Path )
 		if err != nil {
 			successfulCount--;
 			errors = append( errors, fmt.Sprintf( "%v\n", err ) )
 		}
 	}
 
-	TriggersReport( successfulCount, errors )
+	Report( "triggers", successfulCount, len( Cfg.TriggerFiles ), errors )
 
 	return
-}
-
-/*
- * Pretty print of trigger loading result
- */
-func TriggersReport( successfulCount int, errors []string ) {
-	fmt.Printf( "Loaded %d triggers", successfulCount )
-	if successfulCount < len( Cfg.TriggerFiles ) {
-		fmt.Printf( " - %d with error", len( Cfg.TriggerFiles ) - successfulCount )
-	}
-	fmt.Printf( "\n" )
-
-	for _, err := range errors {
-		fmt.Printf( err )
-	}
 }
 
 type Trigger struct {
-	Path            string
-	Name            string
+	CodeUnit
 	Table           string
-	Definition      string
 	Function        Function
-	previousExists  bool
-	parseSignature  bool
-}
-
-/*
- * Create or update a trigger found in FS
- */
-func ( trigger *Trigger ) Process() ( err error ) {
-	errFmt := "  error while loading %s\n  %v\n"
-
-	if err = trigger.Load() ; err != nil { return fmt.Errorf( errFmt, trigger.Path, err ) }
-	if err = trigger.Parse() ; err != nil { return fmt.Errorf( errFmt, trigger.Path, err ) }
-	if err = trigger.Drop() ; err != nil { return fmt.Errorf( errFmt, trigger.Path, err ) }
-	if err = trigger.Create() ; err != nil { return fmt.Errorf( errFmt, trigger.Path, err ) }
-
-	return
 }
 
 /*
@@ -89,7 +58,7 @@ func ( trigger *Trigger ) Parse() ( err error ) {
 		return fmt.Errorf( "Can't find a trigger in %s", trigger.Path )
 	}
 
-	trigger.Function = Function{ Definition: trigger.Definition, Path: trigger.Path }
+	trigger.Function = Function{ CodeUnit: CodeUnit{ Definition: trigger.Definition, Path: trigger.Path } }
 	trigger.Function.Parse()
 
 	trigger.Name = subMatches[1]
@@ -102,22 +71,16 @@ func ( trigger *Trigger ) Parse() ( err error ) {
  * Drop existing trigger from pg
  */
 func ( trigger *Trigger ) Drop() ( err error ) {
-	rows, err := Query( `DROP TRIGGER IF EXISTS ` + trigger.Name + ` ON ` + trigger.Table + ` CASCADE` )
-	if err != nil { fmt.Printf( "error on drop : DROP TRIGGER IF EXISTS " + trigger.Name + " ON " + trigger.Table + " CASCADE\n" ); return err }
-	rows.Close()
-	if err = trigger.Function.Drop() ; err != nil { return err }
+	err = trigger.CodeUnit.Drop( `DROP TRIGGER IF EXISTS ` + trigger.Name + ` ON ` + trigger.Table + ` CASCADE` )
+	if err != nil { return err }
 
-	return
+	return trigger.Function.Drop()
 }
 
 /*
  * Create the trigger in pg
  */
 func ( trigger *Trigger ) Create() ( err error ) {
-	rows, err := Query( trigger.Definition )
-	if err != nil { return err }
-	rows.Close()
-
-	return
+	return trigger.CodeUnit.Create( trigger.Definition )
 }
 

@@ -15,54 +15,23 @@ func LoadViews() ( err error ) {
 
 
 	for _, file := range Cfg.ViewFiles {
-		view := View{ Path: file }
-		err = view.Process()
+		view := View{}
+		view.Path = file
+
+		err = ProcessUnit( &view, view.Path )
 		if err != nil {
 			successfulCount--;
 			errors = append( errors, fmt.Sprintf( "%v\n", err ) )
 		}
 	}
 
-	ViewsReport( successfulCount, errors )
+	Report( "triggers", successfulCount, len( Cfg.ViewFiles ), errors )
 
 	return
-}
-
-/*
- * Pretty print of view loading result
- */
-func ViewsReport( successfulCount int, errors []string ) {
-	fmt.Printf( "Loaded %d views", successfulCount )
-	if successfulCount < len( Cfg.ViewFiles ) {
-		fmt.Printf( " - %d with error", len( Cfg.ViewFiles ) - successfulCount )
-	}
-	fmt.Printf( "\n" )
-
-	for _, err := range errors {
-		fmt.Printf( err )
-	}
 }
 
 type View struct {
-	Path            string
-	Name            string
-	Definition      string
-	previousExists  bool
-	parseSignature  bool
-}
-
-/*
- * Create or update a view found in FS
- */
-func ( view *View ) Process() ( err error ) {
-	errFmt := "  error while loading %s\n  %v\n"
-
-	if err = view.Load() ; err != nil { return fmt.Errorf( errFmt, view.Path, err ) }
-	if err = view.Parse() ; err != nil { return fmt.Errorf( errFmt, view.Path, err ) }
-	if err = view.Drop() ; err != nil { return fmt.Errorf( errFmt, view.Path, err ) }
-	if err = view.Create() ; err != nil { return fmt.Errorf( errFmt, view.Path, err ) }
-
-	return
+	CodeUnit
 }
 
 /*
@@ -96,19 +65,12 @@ func ( view *View ) Parse() ( err error ) {
  * Drop existing view from pg
  */
 func ( view *View ) Drop() ( err error ) {
-	rows, err := Query( `DROP VIEW IF EXISTS ` + view.Name + ` CASCADE` )
-	if err != nil { return err }
-	rows.Close()
-	return
+	return view.CodeUnit.Drop( `DROP VIEW IF EXISTS ` + view.Name + ` CASCADE` )
 }
 
 /*
  * Create the view in pg
  */
 func ( view *View ) Create() ( err error ) {
-	rows, err := Query( view.Definition )
-	if err != nil { return err }
-	rows.Close()
-
-	return
+	return view.CodeUnit.Create( view.Definition )
 }
