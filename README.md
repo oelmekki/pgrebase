@@ -51,8 +51,9 @@ after your migration task in your deployment pipeline.
 go get github.com/oelmekki/pgrebase
 ```
 
-Binary will be in `$GO_PATH/bin/pgrebase`. This is a static binary,
-so it's safe to copy it in your project.
+Binary will be in `$GO_PATH/bin/pgrebase`. This is a static binary, so it's
+safe to copy it in your project (providing any system calling it is from the
+same architecture).
 
 You can also download prebuilt PgRelease [from release page](https://github.com/oelmekki/pgrebase/releases/)
 (only for linux/amd64).
