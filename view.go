@@ -13,8 +13,10 @@ func LoadViews() ( err error ) {
 	successfulCount := len( Cfg.ViewFiles )
 	errors := make( []string, 0 )
 
+	files, err := ResolveDependencies( Cfg.ViewFiles, Cfg.SqlDirPath + "views" )
+	if err != nil { return err }
 
-	for _, file := range Cfg.ViewFiles {
+	for _, file := range files {
 		view := View{}
 		view.Path = file
 

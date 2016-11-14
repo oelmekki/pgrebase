@@ -95,6 +95,44 @@ DATABASE_URL=your_config ./pgrebase ./sql
 ```
 
 
+## Handling dependencies
+
+You can specify dependencies for files using require statement, provided those
+files are of the same kind. That is, function files can specify dependencies on
+other function files, type files can define dependencies on other type files,
+etc.
+
+Here is an example about how to do it. Let's say your `sql/functions/foo.sql`
+files depends on `sql/functions/whatever/bar.sql`:
+
+```
+$ cat sql/functions/foo.sql
+-- require "whatever/bar.sql"
+CREATE FUNCTION foo()
+[...]
+```
+
+Filenames are always relative to your target directory (`sql/` in that
+example), and within in, to the code kind (`functions/` here).
+
+Do not try to do funky things like adding `./` or `../`, this is no path
+resolution, it just tries to match filenames.
+
+You can add multiple require lines:
+
+```
+-- require "common.sql"
+-- require "hello/world.sql"
+-- require "whatever/bar.sql"
+CREATE FUNCTION foo()
+[...]
+```
+
+There is no advanced debugging for circular dependencies for now, so be sure
+not to get too wild, here (or else, you will have a "maybe there's circular
+dependencies?" message and you will have to figure it out for yourself).
+
+
 ## Caveats
 
 * pgrebase doesn't keep any state about your codebase and does not delete what

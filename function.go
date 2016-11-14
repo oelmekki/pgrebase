@@ -13,8 +13,10 @@ func LoadFunctions() ( err error ) {
 	successfulCount := len( Cfg.FunctionFiles )
 	errors := make( []string, 0 )
 
+	files, err := ResolveDependencies( Cfg.FunctionFiles, Cfg.SqlDirPath + "functions" )
+	if err != nil { return err }
 
-	for _, file := range Cfg.FunctionFiles {
+	for _, file := range files {
 		function := Function{}
 		function.Path = file
 

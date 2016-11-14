@@ -13,8 +13,10 @@ func LoadTypes() ( err error ) {
 	successfulCount := len( Cfg.TypeFiles )
 	errors := make( []string, 0 )
 
+	files, err := ResolveDependencies( Cfg.TypeFiles, Cfg.SqlDirPath + "types" )
+	if err != nil { return err }
 
-	for _, file := range Cfg.TypeFiles {
+	for _, file := range files {
 		pgtype := Type{}
 		pgtype.Path = file
 

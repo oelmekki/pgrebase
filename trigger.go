@@ -13,8 +13,10 @@ func LoadTriggers() ( err error ) {
 	successfulCount := len( Cfg.TriggerFiles )
 	errors := make( []string, 0 )
 
+	files, err := ResolveDependencies( Cfg.TriggerFiles, Cfg.SqlDirPath + "triggers" )
+	if err != nil { return err }
 
-	for _, file := range Cfg.TriggerFiles {
+	for _, file := range files {
 		trigger := Trigger{}
 		trigger.Path = file
 

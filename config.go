@@ -72,6 +72,9 @@ func ( config *Config ) parseSqlDir() ( err error ) {
 	}
 
 	config.SqlDirPath = os.Args[ len( os.Args ) - 1 ]
+	if string( config.SqlDirPath[ len( config.SqlDirPath ) - 1 ] ) != "/" {
+		config.SqlDirPath += "/"
+	}
 
 	return
 }
