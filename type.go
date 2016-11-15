@@ -12,18 +12,33 @@ import (
 func LoadTypes() ( err error ) {
 	successfulCount := len( Cfg.TypeFiles )
 	errors := make( []string, 0 )
+	var bypass map[string]bool
 
 	files, err := ResolveDependencies( Cfg.TypeFiles, Cfg.SqlDirPath + "types" )
 	if err != nil { return err }
 
-	for _, file := range files {
+	pgtypes := make( []Type, 0 )
+	for i := len( files ) - 1 ; i >= 0 ; i-- {
+		file := files[ i ]
 		pgtype := Type{}
 		pgtype.Path = file
 
-		err = ProcessUnit( &pgtype, pgtype.Path )
+		err = DownPass( &pgtype, pgtype.Path )
 		if err != nil {
-			successfulCount--;
+			successfulCount--
 			errors = append( errors, fmt.Sprintf( "%v\n", err ) )
+			bypass[ pgtype.Path ] = true
+		}
+	}
+
+	for i := len( pgtypes ) - 1 ; i >= 0 ; i-- {
+		pgtype := pgtypes[ i ]
+		if _, ignore := bypass[ pgtype.Path ] ; ! ignore {
+			err = UpPass( &pgtype, pgtype.Path )
+			if err != nil {
+				successfulCount--
+				errors = append( errors, fmt.Sprintf( "%v\n", err ) )
+			}
 		}
 	}
 

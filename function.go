@@ -12,18 +12,33 @@ import (
 func LoadFunctions() ( err error ) {
 	successfulCount := len( Cfg.FunctionFiles )
 	errors := make( []string, 0 )
+	var bypass map[string]bool
 
 	files, err := ResolveDependencies( Cfg.FunctionFiles, Cfg.SqlDirPath + "functions" )
 	if err != nil { return err }
 
-	for _, file := range files {
+	functions := make( []Function, 0 )
+	for i := len( files ) - 1 ; i >= 0 ; i-- {
+		file := files[ i ]
 		function := Function{}
 		function.Path = file
 
-		err = ProcessUnit( &function, function.Path )
+		err = DownPass( &function, function.Path )
 		if err != nil {
-			successfulCount--;
+			successfulCount--
 			errors = append( errors, fmt.Sprintf( "%v\n", err ) )
+			bypass[ function.Path ] = true
+		}
+	}
+
+	for i := len( functions ) - 1 ; i >= 0 ; i-- {
+		function := functions[ i ]
+		if _, ignore := bypass[ function.Path ] ; ! ignore {
+			err = UpPass( &function, function.Path )
+			if err != nil {
+				successfulCount--
+				errors = append( errors, fmt.Sprintf( "%v\n", err ) )
+			}
 		}
 	}
 

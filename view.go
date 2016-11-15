@@ -12,18 +12,33 @@ import (
 func LoadViews() ( err error ) {
 	successfulCount := len( Cfg.ViewFiles )
 	errors := make( []string, 0 )
+	var bypass map[string]bool
 
 	files, err := ResolveDependencies( Cfg.ViewFiles, Cfg.SqlDirPath + "views" )
 	if err != nil { return err }
 
-	for _, file := range files {
+	views := make( []View, 0 )
+	for i := len( files ) - 1 ; i >= 0 ; i-- {
+		file := files[ i ]
 		view := View{}
 		view.Path = file
 
-		err = ProcessUnit( &view, view.Path )
+		err = DownPass( &view, view.Path )
 		if err != nil {
-			successfulCount--;
+			successfulCount--
 			errors = append( errors, fmt.Sprintf( "%v\n", err ) )
+			bypass[ view.Path ] = true
+		}
+	}
+
+	for i := len( views ) - 1 ; i >= 0 ; i-- {
+		view := views[ i ]
+		if _, ignore := bypass[ view.Path ] ; ! ignore {
+			err = UpPass( &view, view.Path )
+			if err != nil {
+				successfulCount--
+				errors = append( errors, fmt.Sprintf( "%v\n", err ) )
+			}
 		}
 	}
 
