@@ -17,11 +17,12 @@ func LoadTriggers() ( err error ) {
 	files, err := ResolveDependencies( Cfg.TriggerFiles, Cfg.SqlDirPath + "triggers" )
 	if err != nil { return err }
 
-	triggers := make( []Trigger, 0 )
+	triggers := make( []*Trigger, 0 )
 	for i := len( files ) - 1 ; i >= 0 ; i-- {
 		file := files[ i ]
 		trigger := Trigger{}
 		trigger.Path = file
+		triggers = append( triggers, &trigger )
 
 		err = DownPass( &trigger, trigger.Path )
 		if err != nil {
@@ -34,7 +35,7 @@ func LoadTriggers() ( err error ) {
 	for i := len( triggers ) - 1 ; i >= 0 ; i-- {
 		trigger := triggers[ i ]
 		if _, ignore := bypass[ trigger.Path ] ; ! ignore {
-			err = UpPass( &trigger, trigger.Path )
+			err = UpPass( trigger, trigger.Path )
 			if err != nil {
 				successfulCount--
 				errors = append( errors, fmt.Sprintf( "%v\n", err ) )
