@@ -45,7 +45,7 @@ func CheckSanity() {
  */
 func Usage() {
 	usage := `
-PgRebase-1.0.1+
+PgRebase-1.1.0
 
 USAGE:
 	DATABASE_URL=url pgrebase [-w] <sql_directory>
