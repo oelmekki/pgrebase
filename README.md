@@ -17,6 +17,8 @@ The classic tool for this is the migration software, asking you to manage
 migration files. This is great for handling tables, not so great to make
 frequent changes to your functions. Can we do better?
 
+> Still confused about what the problem is here? See [this more in depth explanation](https://news.ycombinator.com/item?id=12976026) on Hacker News.
+
 
 ## What
 
