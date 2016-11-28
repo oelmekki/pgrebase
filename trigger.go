@@ -12,7 +12,7 @@ import (
 func LoadTriggers() ( err error ) {
 	successfulCount := len( Cfg.TriggerFiles )
 	errors := make( []string, 0 )
-	var bypass map[string]bool
+	bypass := make(map[string]bool)
 
 	files, err := ResolveDependencies( Cfg.TriggerFiles, Cfg.SqlDirPath + "triggers" )
 	if err != nil { return err }
@@ -101,4 +101,3 @@ func ( trigger *Trigger ) Drop() ( err error ) {
 func ( trigger *Trigger ) Create() ( err error ) {
 	return trigger.CodeUnit.Create( trigger.Definition )
 }
-

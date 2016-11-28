@@ -12,7 +12,7 @@ import (
 func LoadTypes() ( err error ) {
 	successfulCount := len( Cfg.TypeFiles )
 	errors := make( []string, 0 )
-	var bypass map[string]bool
+	bypass := make(map[string]bool)
 
 	files, err := ResolveDependencies( Cfg.TypeFiles, Cfg.SqlDirPath + "types" )
 	if err != nil { return err }

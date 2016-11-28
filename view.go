@@ -12,7 +12,7 @@ import (
 func LoadViews() ( err error ) {
 	successfulCount := len( Cfg.ViewFiles )
 	errors := make( []string, 0 )
-	var bypass map[string]bool
+	bypass := make(map[string]bool)
 
 	files, err := ResolveDependencies( Cfg.ViewFiles, Cfg.SqlDirPath + "views" )
 	if err != nil { return err }
