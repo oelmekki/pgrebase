@@ -12,7 +12,7 @@ import (
 func LoadFunctions() ( err error ) {
 	successfulCount := len( Cfg.FunctionFiles )
 	errors := make( []string, 0 )
-	var bypass map[string]bool
+	bypass := make(map[string]bool)
 
 	files, err := ResolveDependencies( Cfg.FunctionFiles, Cfg.SqlDirPath + "functions" )
 	if err != nil { return err }
