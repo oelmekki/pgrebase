@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 /*
@@ -84,6 +85,9 @@ func ( function *Function ) Parse() ( err error ) {
 		if err != nil { return err }
 	}
 
+	err = function.removeDefaultFromSignature()
+	if err != nil { return }
+
 	return
 }
 
@@ -121,6 +125,31 @@ func ( function *Function ) previousSignature() ( signature string, exists bool,
 		oldFunction := Function{ CodeUnit: CodeUnit{ Definition: body, parseSignature: true } }
 		if err = oldFunction.Parse() ; err != nil { return }
 		signature = oldFunction.Signature
+	}
+
+	return
+}
+
+
+/*
+ * `DROP FUNCTION` raises error if the signature contains `DEFAULT` values for
+ * parameters, so we must remove them.
+ */
+func ( function *Function ) removeDefaultFromSignature() ( err error ) {
+	anyDefault, err := regexp.MatchString( "(?i)DEFAULT", function.Signature )
+	if err != nil { return }
+
+	if anyDefault {
+		arguments := strings.Split( function.Signature, "," )
+		newArgs := make( []string, 0 )
+
+		for _, arg := range arguments {
+			arg = strings.Replace( arg, " DEFAULT ", " default ", -1 )
+			newArg := strings.Split( arg, " default " )[0]
+			newArgs = append( newArgs, newArg )
+		}
+
+		function.Signature = strings.Join( newArgs, "," )
 	}
 
 	return
