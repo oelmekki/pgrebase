@@ -1,14 +1,14 @@
 # PgRebase
 
 PgRebase is a tool that allows you to easily handle your postgres codebase for
-functions, triggers, custom types and views.
+functions, triggers and views.
 
 
 ## Why
 
 If you started outsourcing data manipulation to your database through
 postgresql cool features, you probably realized this is painful. Postgresql's
-functions, triggers, custom types and views are not your usual codebase, they
+functions, triggers and views are not your usual codebase, they
 live in postgres, and you often have to drop them if you want to edit them, eg
 when you change a function signature. You could edit them directly in psql, but
 then it's migrating servers / other devs installation that becomes difficult.
@@ -22,7 +22,7 @@ frequent changes to your functions. Can we do better?
 
 ## What
 
-PgRebase allows you to manage your functions/triggers/types/views as plain files in
+PgRebase allows you to manage your functions/triggers/views as plain files in
 filesystem. You put them in a `sql/` directory, one file per
 function/trigger/type/view.
 
@@ -33,8 +33,6 @@ sql/
 │   └── assign_user_to_team.sql
 ├── triggers/
 │   └── user_updated_at.sql
-├── types/
-│   └── follower.sql
 └── views/
     └── user_json.sql
 ```
@@ -43,7 +41,7 @@ No need to add drop statement in those files, PgRebase will take care of it.
 
 In watch mode (useful for development), just save your file, pgrebase will
 update your database. In normal mode (useful for deployment), pgrebase will
-recreate all functions/triggers/types/views found in your filesystem directory.
+recreate all functions/triggers/views found in your filesystem directory.
 
 You can now work with postgres codebase live reload, then call pgrebase just
 after your migration task in your deployment pipeline.
@@ -74,14 +72,12 @@ Loaded 25 views
 Loaded 5 triggers - 1 trigger with error
   error while loading sql/triggers/user_updated_at.sql
   column users.updated_at does not exist
-Loaded 3 types
 
 
 $ ./pgrebase -w sql/
 Loaded 10 functions
 Loaded 25 views
 Loaded 6 triggers
-Loaded 3 types
 Watching filesystem for changes...
 FS changed. Building.
 ```
@@ -156,12 +152,8 @@ dependencies?" message and you will have to figure it out for yourself).
 * pgrebase single top concern is to not delete any data. This means that no
   DROP will CASCADE. This means that if your database structure depends on
   anything defined in pgrebase codebase, it will fail to reload it when it
-  implies dropping it (that is, most of the time). An important implication of
-  that is that you should not add types in pgrebase codebase if they are used
-  as column types in your tables. For those, declare your types using your
-  usual migration technique. To be more clear: only define here types that are
-  only used by your functions/views/triggers.
-
+  implies dropping it (that is, most of the time). In other terms, do not
+  use pgrebase managed functions as default value for your tables' fields.
 
 ## Any issue?
 
