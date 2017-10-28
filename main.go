@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"log"
+	"os"
 	"time"
 )
 
@@ -14,8 +14,8 @@ var Cfg Config
  *   DATABASE_URL=url pgrebase [-w] sql_dir/
  */
 func ParseConfig() {
-	if err := Cfg.Parse() ; err != nil {
-		fmt.Printf( "Error: %v\n", err )
+	if err := Cfg.Parse(); err != nil {
+		fmt.Printf("Error: %v\n", err)
 		Usage()
 	}
 }
@@ -34,8 +34,8 @@ func ParseConfig() {
  */
 func CheckSanity() {
 	sanity := Sanity{}
-	if err := sanity.Check() ; err != nil {
-		fmt.Printf( "Error: %v\n", err )
+	if err := sanity.Check(); err != nil {
+		fmt.Printf("Error: %v\n", err)
 		Usage()
 	}
 }
@@ -69,20 +69,28 @@ OPTIONS:
 	-w: enter watch mode.
 		In watch mode, pgrebase will keep watching for file changes and will
 		automatically reload your sql code when it happens.
-	`;
+	`
 
-	fmt.Println( usage )
+	fmt.Println(usage)
 	os.Exit(1)
 }
 
 /*
  * Start the actual work
  */
-func Process() ( err error ) {
-	if err = LoadTypes() ; err != nil { return err }
-	if err = LoadViews() ; err != nil { return err }
-	if err = LoadFunctions() ; err != nil { return err }
-	if err = LoadTriggers() ; err != nil { return err }
+func Process() (err error) {
+	if err = LoadTypes(); err != nil {
+		return err
+	}
+	if err = LoadViews(); err != nil {
+		return err
+	}
+	if err = LoadFunctions(); err != nil {
+		return err
+	}
+	if err = LoadTriggers(); err != nil {
+		return err
+	}
 
 	return
 }
@@ -90,8 +98,8 @@ func Process() ( err error ) {
 /*
  * Fire a watcher, will die as soon something changed
  */
-func StartWatching( errorChan chan error, doneChan chan bool ) ( err error ) {
-	watcher := Watcher{ Done: doneChan, Error: errorChan }
+func StartWatching(errorChan chan error, doneChan chan bool) (err error) {
+	watcher := Watcher{Done: doneChan, Error: errorChan}
 	go watcher.Start()
 
 	return
@@ -101,28 +109,34 @@ func StartWatching( errorChan chan error, doneChan chan bool ) ( err error ) {
  * Process events from watchers
  */
 func WatchTheWatcher() {
-	fmt.Println( "Watching filesystem for changes..." )
+	fmt.Println("Watching filesystem for changes...")
 
-	errorChan := make( chan error )
-	doneChan := make( chan bool )
+	errorChan := make(chan error)
+	doneChan := make(chan bool)
 
-	if err := StartWatching( errorChan, doneChan ) ; err != nil { log.Fatal( err ) }
+	if err := StartWatching(errorChan, doneChan); err != nil {
+		log.Fatal(err)
+	}
 
 	for {
 		select {
-			case <-doneChan:
-				time.Sleep( 300 * time.Millisecond ) // without this, new file watcher is started faster than file writing has ended
-				Cfg.ScanFiles()
+		case <-doneChan:
+			time.Sleep(300 * time.Millisecond) // without this, new file watcher is started faster than file writing has ended
+			Cfg.ScanFiles()
 
-				if err := Process() ; err != nil {
-					fmt.Printf( "Error: %v\n", err )
-				}
+			if err := Process(); err != nil {
+				fmt.Printf("Error: %v\n", err)
+			}
 
-				if err := StartWatching( errorChan, doneChan ) ; err != nil { log.Fatal( err ) }
+			if err := StartWatching(errorChan, doneChan); err != nil {
+				log.Fatal(err)
+			}
 
-			case err := <-errorChan:
-				fmt.Printf( "Error: %v\n", err )
-				if err := StartWatching( errorChan, doneChan ) ; err != nil { log.Fatal( err ) }
+		case err := <-errorChan:
+			fmt.Printf("Error: %v\n", err)
+			if err := StartWatching(errorChan, doneChan); err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 }
@@ -131,8 +145,8 @@ func main() {
 	ParseConfig()
 	CheckSanity()
 
-	if err := Process() ; err != nil {
-		fmt.Printf( "Error: %v\n", err )
+	if err := Process(); err != nil {
+		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 

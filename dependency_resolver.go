@@ -1,17 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"regexp"
-	"fmt"
 )
 
 /*
  * Parse files to find their dependencies requirements, and return them
  * sorted accordingly.
  */
-func ResolveDependencies( files []string, base string ) ( sortedFiles []string, err error ) {
-	resolver := DependencyResolver{ initialFiles: files, Base: base }
+func ResolveDependencies(files []string, base string) (sortedFiles []string, err error) {
+	resolver := DependencyResolver{initialFiles: files, Base: base}
 	return resolver.Resolve()
 }
 
@@ -25,32 +25,34 @@ type DependencyResolver struct {
 /*
  * Actual resolve looping
  */
-func ( resolver *DependencyResolver ) Resolve() ( sortedFiles []string, err error ) {
+func (resolver *DependencyResolver) Resolve() (sortedFiles []string, err error) {
 	for _, file := range resolver.initialFiles {
-		source := SourceFile{ path: file }
-		err = source.ParseDependencies( resolver.Base )
-		if err != nil { return }
+		source := SourceFile{path: file}
+		err = source.ParseDependencies(resolver.Base)
+		if err != nil {
+			return
+		}
 
-		if source.Resolved( resolver.sortedFiles ) {
-			resolver.sortedFiles = append( resolver.sortedFiles, source.path )
-			resolver.RemovePending( source )
+		if source.Resolved(resolver.sortedFiles) {
+			resolver.sortedFiles = append(resolver.sortedFiles, source.path)
+			resolver.RemovePending(source)
 			resolver.ProcessPendings()
 		} else {
-			resolver.pendingFiles = append( resolver.pendingFiles, source )
+			resolver.pendingFiles = append(resolver.pendingFiles, source)
 		}
 	}
 
-	if len( resolver.pendingFiles ) > 0 {
-		for i := 0 ; i < len( resolver.pendingFiles ) ; i++ {
+	if len(resolver.pendingFiles) > 0 {
+		for i := 0; i < len(resolver.pendingFiles); i++ {
 			resolver.ProcessPendings()
-			if len( resolver.pendingFiles ) == 0 {
+			if len(resolver.pendingFiles) == 0 {
 				break
 			}
 		}
 	}
 
-	if len( resolver.pendingFiles ) > 0 {
-		err = fmt.Errorf( "Can't resolve dependencies in %s. Circular dependencies?", resolver.Base )
+	if len(resolver.pendingFiles) > 0 {
+		err = fmt.Errorf("Can't resolve dependencies in %s. Circular dependencies?", resolver.Base)
 	} else {
 		sortedFiles = resolver.sortedFiles
 	}
@@ -61,11 +63,11 @@ func ( resolver *DependencyResolver ) Resolve() ( sortedFiles []string, err erro
 /*
  * Check if previously unresolved dependencies now are
  */
-func ( resolver *DependencyResolver ) ProcessPendings() {
+func (resolver *DependencyResolver) ProcessPendings() {
 	for _, source := range resolver.pendingFiles {
-		if source.Resolved( resolver.sortedFiles ) {
-			resolver.sortedFiles = append( resolver.sortedFiles, source.path )
-			resolver.RemovePending( source )
+		if source.Resolved(resolver.sortedFiles) {
+			resolver.sortedFiles = append(resolver.sortedFiles, source.path)
+			resolver.RemovePending(source)
 		}
 	}
 }
@@ -73,12 +75,12 @@ func ( resolver *DependencyResolver ) ProcessPendings() {
 /*
  * Remove a resolved source file from pending files
  */
-func ( resolver *DependencyResolver ) RemovePending( source SourceFile ) {
-	newPendings := make( []SourceFile, 0 )
+func (resolver *DependencyResolver) RemovePending(source SourceFile) {
+	newPendings := make([]SourceFile, 0)
 
 	for _, pending := range resolver.pendingFiles {
 		if pending.path != source.path {
-			newPendings = append( newPendings, pending )
+			newPendings = append(newPendings, pending)
 		}
 	}
 
@@ -93,16 +95,16 @@ type SourceFile struct {
 /*
  * Read dependencies from source file
  */
-func ( source *SourceFile ) ParseDependencies( base string ) ( err error ) {
-	source.dependencies = make( []string, 0 )
+func (source *SourceFile) ParseDependencies(base string) (err error) {
+	source.dependencies = make([]string, 0)
 
-	file, err := ioutil.ReadFile( source.path )
-	dependencyFinder := regexp.MustCompile( `--\s+require\s+['"](.*)['"]` )
-	dependencies := dependencyFinder.FindAllStringSubmatch( string( file ), -1 )
+	file, err := ioutil.ReadFile(source.path)
+	dependencyFinder := regexp.MustCompile(`--\s+require\s+['"](.*)['"]`)
+	dependencies := dependencyFinder.FindAllStringSubmatch(string(file), -1)
 
 	for _, submatches := range dependencies {
-		if len( submatches ) > 1 {
-			dependency :=  base + "/" + submatches[1]
+		if len(submatches) > 1 {
+			dependency := base + "/" + submatches[1]
 			alreadyExists := false
 
 			for _, existing := range source.dependencies {
@@ -111,8 +113,8 @@ func ( source *SourceFile ) ParseDependencies( base string ) ( err error ) {
 				}
 			}
 
-			if ! alreadyExists {
-				source.dependencies = append( source.dependencies, dependency )
+			if !alreadyExists {
+				source.dependencies = append(source.dependencies, dependency)
 			}
 		}
 	}
@@ -123,7 +125,7 @@ func ( source *SourceFile ) ParseDependencies( base string ) ( err error ) {
 /*
  * Check if all dependencies of current file are resolved
  */
-func ( source *SourceFile ) Resolved( readyFiles []string ) bool {
+func (source *SourceFile) Resolved(readyFiles []string) bool {
 	for _, file := range source.dependencies {
 		resolved := false
 
@@ -133,7 +135,7 @@ func ( source *SourceFile ) Resolved( readyFiles []string ) bool {
 			}
 		}
 
-		if ! resolved {
+		if !resolved {
 			return false
 		}
 	}

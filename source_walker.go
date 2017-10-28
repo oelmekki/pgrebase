@@ -1,8 +1,8 @@
 package main
 
 import (
-	"path/filepath"
 	"os"
+	"path/filepath"
 )
 
 type SourceWalker struct {
@@ -12,7 +12,7 @@ type SourceWalker struct {
 /*
  * Load all source files paths
  */
-func ( walker *SourceWalker ) Process() {
+func (walker *SourceWalker) Process() {
 	walker.Config.FunctionFiles = walker.findFunctions()
 	walker.Config.TriggerFiles = walker.findTriggers()
 	walker.Config.TypeFiles = walker.findTypes()
@@ -24,38 +24,38 @@ func ( walker *SourceWalker ) Process() {
 /*
  * Find path of function files
  */
-func ( walker *SourceWalker ) findFunctions() ( paths []string ) {
-	return walker.sqlFilesIn( walker.Config.SqlDirPath + "/functions" )
+func (walker *SourceWalker) findFunctions() (paths []string) {
+	return walker.sqlFilesIn(walker.Config.SqlDirPath + "/functions")
 }
 
 /*
  * Find path of trigger files
  */
-func ( walker *SourceWalker ) findTriggers() ( paths []string ) {
-	return walker.sqlFilesIn( walker.Config.SqlDirPath + "/triggers" )
+func (walker *SourceWalker) findTriggers() (paths []string) {
+	return walker.sqlFilesIn(walker.Config.SqlDirPath + "/triggers")
 }
 
 /*
  * Find path of type files
  */
-func ( walker *SourceWalker ) findTypes() ( paths []string ) {
-	return walker.sqlFilesIn( walker.Config.SqlDirPath + "/types" )
+func (walker *SourceWalker) findTypes() (paths []string) {
+	return walker.sqlFilesIn(walker.Config.SqlDirPath + "/types")
 }
 
 /*
  * Find path of view files
  */
-func ( walker *SourceWalker ) findViews() ( paths []string ) {
-	return walker.sqlFilesIn( walker.Config.SqlDirPath + "/views" )
+func (walker *SourceWalker) findViews() (paths []string) {
+	return walker.sqlFilesIn(walker.Config.SqlDirPath + "/views")
 }
 
 /*
  * Walk a directory to find sql files
  */
-func ( walker *SourceWalker ) sqlFilesIn( path string ) ( paths []string ) {
-	filepath.Walk( path, func( path string, info os.FileInfo, err error ) error {
-		if IsSqlFile( path ) {
-			paths = append( paths, path )
+func (walker *SourceWalker) sqlFilesIn(path string) (paths []string) {
+	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if IsSqlFile(path) {
+			paths = append(paths, path)
 		}
 
 		return nil
