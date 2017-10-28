@@ -7,9 +7,7 @@ import (
 	"regexp"
 )
 
-/*
- * Check if file exists and is a directory
- */
+// IsDir checks if file exists and is a directory.
 func IsDir(filePath string) bool {
 	info, err := os.Stat(filePath)
 	if err != nil {
@@ -18,25 +16,19 @@ func IsDir(filePath string) bool {
 	return info.IsDir()
 }
 
-/*
- * Check if provided file is an sql file (only check for extension)
- */
+// IsSqlFile checks if provided file is an sql file (only check for extension).
 func IsSqlFile(filePath string) bool {
 	isSqlFile := regexp.MustCompile(`.*\.sql$`)
 	return isSqlFile.MatchString(filePath)
 }
 
-/*
- * Check if file is hidden
- */
+// IsHiddenFile checks if file is hidden.
 func IsHiddenFile(filePath string) bool {
 	basename := path.Base(filePath)
 	return string(basename[0]) == "."
 }
 
-/*
- * Pretty print the result of an import
- */
+// Report pretty prints the result of an import.
 func Report(name string, successCount, totalCount int, errors []string) {
 	fmt.Printf("Loaded %d %s", successCount, name)
 	if successCount < totalCount {

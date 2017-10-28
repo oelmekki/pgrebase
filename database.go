@@ -6,9 +6,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-/*
- * Wrapper for sql.Query, meant to be the main query interface
- */
+// Query is a wrapper for sql.Query, meant to be the main query interface.
 func Query(query string, parameters ...interface{}) (rows *sql.Rows, err error) {
 	var co *sql.DB
 

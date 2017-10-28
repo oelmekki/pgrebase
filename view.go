@@ -6,9 +6,7 @@ import (
 	"regexp"
 )
 
-/*
- * Load or reload all views found in FS.
- */
+// LoadViews loads or reloads all views found in FS.
 func LoadViews() (err error) {
 	successfulCount := len(Cfg.ViewFiles)
 	errors := make([]string, 0)
@@ -50,13 +48,12 @@ func LoadViews() (err error) {
 	return
 }
 
+// View is the code unit for views.
 type View struct {
 	CodeUnit
 }
 
-/*
- * Load view definition from file
- */
+// Load loads view definition from file.
 func (view *View) Load() (err error) {
 	definition, err := ioutil.ReadFile(view.Path)
 	if err != nil {
@@ -67,9 +64,7 @@ func (view *View) Load() (err error) {
 	return
 }
 
-/*
- * Parse view for name
- */
+// Parse parses view for name.
 func (view *View) Parse() (err error) {
 	nameFinder := regexp.MustCompile(`(?is)CREATE(?:\s+OR\s+REPLACE)?\s+VIEW\s+(\S+)`)
 	subMatches := nameFinder.FindStringSubmatch(view.Definition)
@@ -83,16 +78,12 @@ func (view *View) Parse() (err error) {
 	return
 }
 
-/*
- * Drop existing view from pg
- */
+// Drop removes existing view from pg.
 func (view *View) Drop() (err error) {
 	return view.CodeUnit.Drop(`DROP VIEW IF EXISTS ` + view.Name)
 }
 
-/*
- * Create the view in pg
- */
+// Create adds the view in pg.
 func (view *View) Create() (err error) {
 	return view.CodeUnit.Create(view.Definition)
 }

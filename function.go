@@ -7,9 +7,7 @@ import (
 	"strings"
 )
 
-/*
- * Load or reload all functions found in FS.
- */
+// LoadFunctions loads or reload all functions found in FS.
 func LoadFunctions() (err error) {
 	successfulCount := len(Cfg.FunctionFiles)
 	errors := make([]string, 0)
@@ -51,14 +49,13 @@ func LoadFunctions() (err error) {
 	return
 }
 
+// Function is the code unit for functions.
 type Function struct {
 	CodeUnit
-	Signature string
+	Signature string // function signature, unparsed
 }
 
-/*
- * Load function definition from file
- */
+// Load loads function definition from file.
 func (function *Function) Load() (err error) {
 	definition, err := ioutil.ReadFile(function.Path)
 	if err != nil {
@@ -69,9 +66,7 @@ func (function *Function) Load() (err error) {
 	return
 }
 
-/*
- * Parse function for name and signature
- */
+// Parse parses function for name and signature.
 func (function *Function) Parse() (err error) {
 	signatureFinder := regexp.MustCompile(`(?is)CREATE(?:\s+OR\s+REPLACE)?\s+FUNCTION\s+(\S+?)\((.*?)\)`)
 	subMatches := signatureFinder.FindStringSubmatch(function.Definition)
@@ -99,9 +94,7 @@ func (function *Function) Parse() (err error) {
 	return
 }
 
-/*
- * Drop existing function from pg
- */
+// Drop removes existing function from pg.
 func (function *Function) Drop() (err error) {
 	if function.previousExists {
 		return function.CodeUnit.Drop(`DROP FUNCTION IF EXISTS ` + function.Name + `(` + function.Signature + `)`)
@@ -110,16 +103,12 @@ func (function *Function) Drop() (err error) {
 	return
 }
 
-/*
- * Create the function in pg
- */
+// Create adds the function in pg.
 func (function *Function) Create() (err error) {
 	return function.CodeUnit.Create(function.Definition)
 }
 
-/*
- * Retrieve old signature from function in database, if any
- */
+// previousSignature retrieves old signature from function in database, if any.
 func (function *Function) previousSignature() (signature string, exists bool, err error) {
 	rows, err := Query(`SELECT pg_get_functiondef(oid) FROM pg_proc WHERE proname = $1`, function.Name)
 	if err != nil {
@@ -144,10 +133,10 @@ func (function *Function) previousSignature() (signature string, exists bool, er
 	return
 }
 
-/*
- * `DROP FUNCTION` raises error if the signature contains `DEFAULT` values for
- * parameters, so we must remove them.
- */
+// removeDefaultFromSignature sanitizes function signature.
+//
+// `DROP FUNCTION` raises error if the signature contains `DEFAULT` values for
+// parameters, so we must remove them.
 func (function *Function) removeDefaultFromSignature() (err error) {
 	anyDefault, err := regexp.MatchString("(?i)DEFAULT", function.Signature)
 	if err != nil {

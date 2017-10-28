@@ -4,17 +4,17 @@ import (
 	"fmt"
 )
 
+// CodeUnit is the generic representation of any code, be it
+// a function, a view, etc.
 type CodeUnit struct {
-	Path           string
-	Name           string
-	Definition     string
-	previousExists bool
-	parseSignature bool
+	Path           string // the absolute path to code file
+	Name           string // the name of function/view/trigger
+	Definition     string // the actual code
+	previousExists bool   // true if this code unit already exists in database
+	parseSignature bool   // true if we need to generate signature (for new functions)
 }
 
-/*
- * Generic drop function for code units
- */
+// Drop is the generic drop function for code units.
 func (unit CodeUnit) Drop(dropQuery string) (err error) {
 	rows, err := Query(dropQuery)
 	if err != nil {
@@ -25,9 +25,7 @@ func (unit CodeUnit) Drop(dropQuery string) (err error) {
 	return
 }
 
-/*
- * Generic creation function for code units
- */
+// Create is the eneric creation function for code units.
 func (unit CodeUnit) Create(definition string) (err error) {
 	rows, err := Query(definition)
 	if err != nil {
@@ -38,6 +36,8 @@ func (unit CodeUnit) Create(definition string) (err error) {
 	return
 }
 
+// CodeUnitCreator is the interface that repesents what
+// can manipulate code units.
 type CodeUnitCreator interface {
 	Load() error
 	Parse() error
@@ -45,10 +45,8 @@ type CodeUnitCreator interface {
 	Create() error
 }
 
-/*
- * Steps used in down pass, when dropping existing code, in dependency
- * graph reverse order
- */
+// DownPass performs the Steps used in down pass, when dropping existing code, in dependency
+// graph reverse order.
 func DownPass(unit CodeUnitCreator, path string) (err error) {
 	errFmt := "  error while loading %s\n  %v\n"
 
@@ -65,10 +63,8 @@ func DownPass(unit CodeUnitCreator, path string) (err error) {
 	return
 }
 
-/*
- * Steps used in up pass, when creating existing code, in dependency
- * graph order
- */
+// UpPass performs the steps used in up pass, when creating existing code, in dependency
+// graph order
 func UpPass(unit CodeUnitCreator, path string) (err error) {
 	errFmt := "  error while creating %s\n  %v\n"
 	if err = unit.Create(); err != nil {

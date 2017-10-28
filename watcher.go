@@ -7,16 +7,15 @@ import (
 	"path/filepath"
 )
 
+// Watcher contains data for watching fs for code change.
 type Watcher struct {
-	Done    chan bool
-	Error   chan error
-	notify  *fsnotify.Watcher
-	watches []string
+	Done    chan bool         // pinged once watcher found changes
+	Error   chan error        // pinged if an error occured
+	notify  *fsnotify.Watcher // the fsnotify low level watcher
+	watches []string          // the list of file paths being watched
 }
 
-/*
- * Start the watch loop
- */
+// Start starts the watch loop.
 func (watcher *Watcher) Start() {
 	var err error
 	watcher.notify, err = fsnotify.NewWatcher()
@@ -32,9 +31,7 @@ func (watcher *Watcher) Start() {
 	return
 }
 
-/*
- * Find all directories and watch them
- */
+// build finds all directories and watch them.
 func (watcher *Watcher) build() (err error) {
 	if err = watcher.notify.Add(Cfg.SqlDirPath); err != nil {
 		return err
@@ -54,9 +51,7 @@ func (watcher *Watcher) build() (err error) {
 	return
 }
 
-/*
- * Watcher event loop
- */
+// loop starts the watcher event processing loop.
 func (watcher *Watcher) loop() {
 	for {
 		select {

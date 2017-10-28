@@ -6,19 +6,18 @@ import (
 	"os"
 )
 
+// Config is the global configuration for execution.
 type Config struct {
-	WatchMode     bool
-	DatabaseUrl   string
-	SqlDirPath    string
-	FunctionFiles []string
-	TriggerFiles  []string
-	TypeFiles     []string
-	ViewFiles     []string
+	WatchMode     bool     // true if we keep watching for fs changes
+	DatabaseUrl   string   // connection info for the database
+	SqlDirPath    string   // place where to find the code units
+	FunctionFiles []string // paths of all function files
+	TriggerFiles  []string // paths of all trigger files
+	TypeFiles     []string // paths of all type files
+	ViewFiles     []string // paths of all view files
 }
 
-/*
- * Retrieve configuration from command line options
- */
+// Parse retrieves configuration from command line options.
 func (config *Config) Parse() (err error) {
 	if err = config.parseDatabaseUrl(); err != nil {
 		return err
@@ -33,9 +32,7 @@ func (config *Config) Parse() (err error) {
 	return
 }
 
-/*
- * Scan sql directory for sql files
- */
+// ScanFiles scans sql directory for sql files.
 func (config *Config) ScanFiles() {
 	config.FunctionFiles = make([]string, 0)
 	config.TriggerFiles = make([]string, 0)
@@ -46,9 +43,7 @@ func (config *Config) ScanFiles() {
 	sourceWalker.Process()
 }
 
-/*
- * Parse options
- */
+// parseFlags parses options.
 func (config *Config) parseFlags() (err error) {
 	flag.BoolVar(&config.WatchMode, "w", false, "Keep watching for filesystem change")
 	flag.Parse()
@@ -56,9 +51,7 @@ func (config *Config) parseFlags() (err error) {
 	return
 }
 
-/*
- * Retrieve database connection info
- */
+// parseDatabaseUrl retrieves database connection info.
 func (config *Config) parseDatabaseUrl() (err error) {
 	config.DatabaseUrl = os.Getenv("DATABASE_URL")
 
@@ -69,9 +62,7 @@ func (config *Config) parseDatabaseUrl() (err error) {
 	return
 }
 
-/*
- * Retrieve sql source directory
- */
+// parseSqlDir retrieves sql source directory.
 func (config *Config) parseSqlDir() (err error) {
 	if len(os.Args) == 1 {
 		return fmt.Errorf("You must provide a sql directory")

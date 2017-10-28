@@ -6,9 +6,7 @@ import (
 	"regexp"
 )
 
-/*
- * Load or reload all triggers found in FS.
- */
+// LoadTriggers loads or reloads all triggers found in FS.
 func LoadTriggers() (err error) {
 	successfulCount := len(Cfg.TriggerFiles)
 	errors := make([]string, 0)
@@ -50,15 +48,14 @@ func LoadTriggers() (err error) {
 	return
 }
 
+// Trigger is the code unit for triggers.
 type Trigger struct {
 	CodeUnit
-	Table    string
-	Function Function
+	Table    string   // name of the table for the trigger
+	Function Function // related function for trigger
 }
 
-/*
- * Load trigger definition from file
- */
+// Load loads trigger definition from file.
 func (trigger *Trigger) Load() (err error) {
 	definition, err := ioutil.ReadFile(trigger.Path)
 	if err != nil {
@@ -69,9 +66,7 @@ func (trigger *Trigger) Load() (err error) {
 	return
 }
 
-/*
- * Parse trigger for name and signature
- */
+// Parse parses trigger for name and signature.
 func (trigger *Trigger) Parse() (err error) {
 	triggerFinder := regexp.MustCompile(`(?is)CREATE(?:\s+CONSTRAINT)?\s+TRIGGER\s+(\S+).*?ON\s+(\S+)`)
 	subMatches := triggerFinder.FindStringSubmatch(trigger.Definition)
@@ -89,9 +84,7 @@ func (trigger *Trigger) Parse() (err error) {
 	return
 }
 
-/*
- * Drop existing trigger from pg
- */
+// Drop removes existing trigger from pg.
 func (trigger *Trigger) Drop() (err error) {
 	err = trigger.CodeUnit.Drop(`DROP TRIGGER IF EXISTS ` + trigger.Name + ` ON ` + trigger.Table)
 	if err != nil {
@@ -101,9 +94,7 @@ func (trigger *Trigger) Drop() (err error) {
 	return trigger.Function.Drop()
 }
 
-/*
- * Create the trigger in pg
- */
+// Create adds the trigger in pg.
 func (trigger *Trigger) Create() (err error) {
 	return trigger.CodeUnit.Create(trigger.Definition)
 }

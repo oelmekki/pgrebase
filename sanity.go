@@ -4,12 +4,10 @@ import (
 	"fmt"
 )
 
-type Sanity struct {
-}
+// Sanity type encapsulates requirement checks.
+type Sanity struct{}
 
-/*
- * Check the fs is ready to be used
- */
+// Check makes sure the fs is ready to be used.
 func (sanity *Sanity) Check() (err error) {
 	if err = sanity.directoryExists(); err != nil {
 		return err
@@ -25,9 +23,7 @@ func (sanity *Sanity) Check() (err error) {
 	return
 }
 
-/*
- * Check the provided sql directory is indeed a directory
- */
+// directoryExists checks the provided sql directory is indeed a directory.
 func (sanity *Sanity) directoryExists() (err error) {
 	if !IsDir(Cfg.SqlDirPath) {
 		return fmt.Errorf("%s is not a directory", Cfg.SqlDirPath)
@@ -36,9 +32,7 @@ func (sanity *Sanity) directoryExists() (err error) {
 	return
 }
 
-/*
- * At least one of functions/, views/, triggers/, types/ should exist
- */
+// typedDirExists makes sure that at least one of functions/, views/, triggers/, types/ exists.
 func (sanity *Sanity) typedDirExists() (err error) {
 	directories := make([]string, 0)
 
@@ -56,9 +50,9 @@ func (sanity *Sanity) typedDirExists() (err error) {
 	return
 }
 
-/*
- * No need to process any further if there are no sql files to load
- */
+// sqlFilesPresent checks there are source file.
+//
+// No need to process any further if there are no sql files to load.
 func (sanity *Sanity) sqlFilesPresent() (err error) {
 	if len(Cfg.FunctionFiles)+len(Cfg.TriggerFiles)+len(Cfg.ViewFiles) == 0 {
 		return fmt.Errorf("Didn't find any sql file in %s", Cfg.SqlDirPath)

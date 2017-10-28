@@ -7,12 +7,10 @@ import (
 	"time"
 )
 
+// Cfg is the global level configuration data structure.
 var Cfg Config
 
-/*
- * Usage :
- *   DATABASE_URL=url pgrebase [-w] sql_dir/
- */
+// ParseConfig makes sure user provided needed configuration.
 func ParseConfig() {
 	if err := Cfg.Parse(); err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -20,18 +18,7 @@ func ParseConfig() {
 	}
 }
 
-/*
- * Expected target structure:
- *
- * <sql_dir>/
- *   functions/
- *   triggers/
- *   types/
- *   views/
- *
- * At least one of functions/triggers/types/views/ should exist.
- *
- */
+// CheckSanity makes sure all requirements are satisfied.
 func CheckSanity() {
 	sanity := Sanity{}
 	if err := sanity.Check(); err != nil {
@@ -40,9 +27,7 @@ func CheckSanity() {
 	}
 }
 
-/*
- * Give user a chance to know what went wrong
- */
+// Usage shows user how they're supposed to use application.
 func Usage() {
 	usage := `
 PgRebase-1.1.2
@@ -75,9 +60,7 @@ OPTIONS:
 	os.Exit(1)
 }
 
-/*
- * Start the actual work
- */
+// Process starts the actual work.
 func Process() (err error) {
 	if err = LoadTypes(); err != nil {
 		return err
@@ -95,9 +78,7 @@ func Process() (err error) {
 	return
 }
 
-/*
- * Fire a watcher, will die as soon something changed
- */
+// StartWatching fires a watcher, will die as soon something changed.
 func StartWatching(errorChan chan error, doneChan chan bool) (err error) {
 	watcher := Watcher{Done: doneChan, Error: errorChan}
 	go watcher.Start()
@@ -105,9 +86,7 @@ func StartWatching(errorChan chan error, doneChan chan bool) (err error) {
 	return
 }
 
-/*
- * Process events from watchers
- */
+// WatchTheWatcher processes events from watchers.
 func WatchTheWatcher() {
 	fmt.Println("Watching filesystem for changes...")
 

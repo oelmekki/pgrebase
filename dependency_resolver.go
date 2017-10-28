@@ -6,25 +6,23 @@ import (
 	"regexp"
 )
 
-/*
- * Parse files to find their dependencies requirements, and return them
- * sorted accordingly.
- */
+// DependencyResolver parses files to find their dependencies requirements, and return them.
+// sorted accordingly.
 func ResolveDependencies(files []string, base string) (sortedFiles []string, err error) {
 	resolver := DependencyResolver{initialFiles: files, Base: base}
 	return resolver.Resolve()
 }
 
+// DependencyResolver holds info about dependencies, like their resolve order and the
+// current state of resolving.
 type DependencyResolver struct {
-	Base         string
-	initialFiles []string
-	sortedFiles  []string
-	pendingFiles []SourceFile
+	Base         string       // the path to resolving root
+	initialFiles []string     // list of found file, unordered
+	sortedFiles  []string     // list of found file, sorted by resolving order
+	pendingFiles []SourceFile // list of found files we're not sure yet of resolving order
 }
 
-/*
- * Actual resolve looping
- */
+// Resolve is the actual resolve looping.
 func (resolver *DependencyResolver) Resolve() (sortedFiles []string, err error) {
 	for _, file := range resolver.initialFiles {
 		source := SourceFile{path: file}
@@ -60,9 +58,7 @@ func (resolver *DependencyResolver) Resolve() (sortedFiles []string, err error) 
 	return
 }
 
-/*
- * Check if previously unresolved dependencies now are
- */
+// ProcessPending checks if previously unresolved dependencies now are.
 func (resolver *DependencyResolver) ProcessPendings() {
 	for _, source := range resolver.pendingFiles {
 		if source.Resolved(resolver.sortedFiles) {
@@ -72,9 +68,7 @@ func (resolver *DependencyResolver) ProcessPendings() {
 	}
 }
 
-/*
- * Remove a resolved source file from pending files
- */
+// RemovePending removes a resolved source file from pending files.
 func (resolver *DependencyResolver) RemovePending(source SourceFile) {
 	newPendings := make([]SourceFile, 0)
 
@@ -92,9 +86,7 @@ type SourceFile struct {
 	dependencies []string
 }
 
-/*
- * Read dependencies from source file
- */
+// ParseDependencies reads dependencies from source file.
 func (source *SourceFile) ParseDependencies(base string) (err error) {
 	source.dependencies = make([]string, 0)
 
@@ -122,9 +114,7 @@ func (source *SourceFile) ParseDependencies(base string) (err error) {
 	return
 }
 
-/*
- * Check if all dependencies of current file are resolved
- */
+// Resolved checks if all dependencies of current file are resolved
 func (source *SourceFile) Resolved(readyFiles []string) bool {
 	for _, file := range source.dependencies {
 		resolved := false

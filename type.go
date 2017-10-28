@@ -6,9 +6,7 @@ import (
 	"regexp"
 )
 
-/*
- * Load or reload all types found in FS.
- */
+// LoadTypes loads or reloads all types found in FS.
 func LoadTypes() (err error) {
 	successfulCount := len(Cfg.TypeFiles)
 	errors := make([]string, 0)
@@ -54,9 +52,7 @@ type Type struct {
 	CodeUnit
 }
 
-/*
- * Load type definition from file
- */
+// Load loads type definition from file.
 func (pgtype *Type) Load() (err error) {
 	definition, err := ioutil.ReadFile(pgtype.Path)
 	if err != nil {
@@ -67,9 +63,7 @@ func (pgtype *Type) Load() (err error) {
 	return
 }
 
-/*
- * Parse type for name
- */
+// Parse parses type for name.
 func (pgtype *Type) Parse() (err error) {
 	nameFinder := regexp.MustCompile(`(?is)CREATE\s+TYPE\s+(\S+)`)
 	subMatches := nameFinder.FindStringSubmatch(pgtype.Definition)
@@ -83,16 +77,12 @@ func (pgtype *Type) Parse() (err error) {
 	return
 }
 
-/*
- * Drop existing type from pg
- */
+// Drop removes existing type from pg.
 func (pgtype *Type) Drop() (err error) {
 	return pgtype.CodeUnit.Drop(`DROP TYPE IF EXISTS ` + pgtype.Name)
 }
 
-/*
- * Create the type in pg
- */
+// Create adds the type in pg.
 func (pgtype *Type) Create() (err error) {
 	return pgtype.CodeUnit.Create(pgtype.Definition)
 }
