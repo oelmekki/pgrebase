@@ -1,69 +1,18 @@
-package main
+package function
 
 import (
 	"fmt"
+	"github.com/oelmekki/pgrebase/core/codeunit"
+	"github.com/oelmekki/pgrebase/core/connection"
 	"io/ioutil"
 	"regexp"
 	"strings"
 )
 
-// LoadFunctions loads or reload all functions found in FS.
-func LoadFunctions() (err error) {
-	successfulCount := len(Cfg.FunctionFiles)
-	errors := make([]string, 0)
-	bypass := make(map[string]bool)
-
-	files, err := ResolveDependencies(Cfg.FunctionFiles, Cfg.SqlDirPath+"functions")
-	if err != nil {
-		return err
-	}
-
-	functions := make([]*Function, 0)
-	for i := len(files) - 1; i >= 0; i-- {
-		file := files[i]
-		function := Function{}
-		function.Path = file
-		functions = append(functions, &function)
-
-		err = DownPass(&function, function.Path)
-		if err != nil {
-			successfulCount--
-			errors = append(errors, fmt.Sprintf("%v\n", err))
-			bypass[function.Path] = true
-		}
-	}
-
-	for i := len(functions) - 1; i >= 0; i-- {
-		function := functions[i]
-		if _, ignore := bypass[function.Path]; !ignore {
-			err = UpPass(function, function.Path)
-			if err != nil {
-				successfulCount--
-				errors = append(errors, fmt.Sprintf("%v\n", err))
-			}
-		}
-	}
-
-	Report("functions", successfulCount, len(Cfg.FunctionFiles), errors)
-
-	return
-}
-
 // Function is the code unit for functions.
 type Function struct {
-	CodeUnit
+	codeunit.CodeUnit
 	Signature string // function signature, unparsed
-}
-
-// Load loads function definition from file.
-func (function *Function) Load() (err error) {
-	definition, err := ioutil.ReadFile(function.Path)
-	if err != nil {
-		return err
-	}
-	function.Definition = string(definition)
-
-	return
 }
 
 // Parse parses function for name and signature.
@@ -77,10 +26,10 @@ func (function *Function) Parse() (err error) {
 
 	function.Name = subMatches[1]
 
-	if function.parseSignature {
+	if function.ParseSignature {
 		function.Signature = subMatches[2]
 	} else {
-		function.Signature, function.previousExists, err = function.previousSignature()
+		function.Signature, function.PreviousExists, err = function.previousSignature()
 		if err != nil {
 			return err
 		}
@@ -94,9 +43,20 @@ func (function *Function) Parse() (err error) {
 	return
 }
 
+// Load loads function definition from file.
+func (function *Function) Load() (err error) {
+	definition, err := ioutil.ReadFile(function.Path)
+	if err != nil {
+		return err
+	}
+	function.Definition = string(definition)
+
+	return
+}
+
 // Drop removes existing function from pg.
 func (function *Function) Drop() (err error) {
-	if function.previousExists {
+	if function.PreviousExists {
 		return function.CodeUnit.Drop(`DROP FUNCTION IF EXISTS ` + function.Name + `(` + function.Signature + `)`)
 	}
 
@@ -110,7 +70,7 @@ func (function *Function) Create() (err error) {
 
 // previousSignature retrieves old signature from function in database, if any.
 func (function *Function) previousSignature() (signature string, exists bool, err error) {
-	rows, err := Query(`SELECT pg_get_functiondef(oid) FROM pg_proc WHERE proname = $1`, function.Name)
+	rows, err := connection.Query(`SELECT pg_get_functiondef(oid) FROM pg_proc WHERE proname = $1`, function.Name)
 	if err != nil {
 		return
 	}
@@ -123,7 +83,7 @@ func (function *Function) previousSignature() (signature string, exists bool, er
 		if err = rows.Scan(&body); err != nil {
 			return
 		}
-		oldFunction := Function{CodeUnit: CodeUnit{Definition: body, parseSignature: true}}
+		oldFunction := Function{CodeUnit: codeunit.CodeUnit{Definition: body, ParseSignature: true}}
 		if err = oldFunction.Parse(); err != nil {
 			return
 		}

@@ -1,17 +1,19 @@
-package main
+package core
 
 import (
+	"github.com/oelmekki/pgrebase/core/config"
+	"github.com/oelmekki/pgrebase/core/utils"
 	"os"
 	"path/filepath"
 )
 
-// SourceWalker type encapsulates fs walking functions.
-type SourceWalker struct {
-	Config *Config
+// sourceWalker type encapsulates fs walking functions.
+type sourceWalker struct {
+	Config *config.Config
 }
 
 // Process loads all source files paths.
-func (walker *SourceWalker) Process() {
+func (walker *sourceWalker) Process() {
 	walker.Config.FunctionFiles = walker.findFunctions()
 	walker.Config.TriggerFiles = walker.findTriggers()
 	walker.Config.TypeFiles = walker.findTypes()
@@ -21,29 +23,29 @@ func (walker *SourceWalker) Process() {
 }
 
 // findFunctions finds path of function files.
-func (walker *SourceWalker) findFunctions() (paths []string) {
+func (walker *sourceWalker) findFunctions() (paths []string) {
 	return walker.sqlFilesIn(walker.Config.SqlDirPath + "/functions")
 }
 
 // findTriggers dinds path of trigger files.
-func (walker *SourceWalker) findTriggers() (paths []string) {
+func (walker *sourceWalker) findTriggers() (paths []string) {
 	return walker.sqlFilesIn(walker.Config.SqlDirPath + "/triggers")
 }
 
 // findTypes finds path of type files.
-func (walker *SourceWalker) findTypes() (paths []string) {
+func (walker *sourceWalker) findTypes() (paths []string) {
 	return walker.sqlFilesIn(walker.Config.SqlDirPath + "/types")
 }
 
 // findViews finds path of view files.
-func (walker *SourceWalker) findViews() (paths []string) {
+func (walker *sourceWalker) findViews() (paths []string) {
 	return walker.sqlFilesIn(walker.Config.SqlDirPath + "/views")
 }
 
 // sqlFilesIn walks a directory to find sql files.
-func (walker *SourceWalker) sqlFilesIn(path string) (paths []string) {
+func (walker *sourceWalker) sqlFilesIn(path string) (paths []string) {
 	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		if IsSqlFile(path) {
+		if utils.IsSqlFile(path) {
 			paths = append(paths, path)
 		}
 

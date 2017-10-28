@@ -92,6 +92,8 @@ migrations step:
 DATABASE_URL=your_config ./pgrebase ./sql
 ```
 
+PgRebase can also be used as a library rather than a command tool. See the `core`
+subpackage.
 
 ## Handling dependencies
 

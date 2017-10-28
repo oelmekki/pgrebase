@@ -1,4 +1,4 @@
-package main
+package connection
 
 import (
 	"database/sql"
@@ -10,7 +10,7 @@ import (
 func Query(query string, parameters ...interface{}) (rows *sql.Rows, err error) {
 	var co *sql.DB
 
-	co, err = sql.Open("postgres", Cfg.DatabaseUrl)
+	co, err = sql.Open("postgres", conf.DatabaseUrl)
 	if err != nil {
 		fmt.Printf("can't connect to database : %v\n", err)
 		return rows, err

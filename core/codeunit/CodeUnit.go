@@ -1,7 +1,8 @@
-package main
+package codeunit
 
 import (
 	"fmt"
+	"github.com/oelmekki/pgrebase/core/connection"
 )
 
 // CodeUnit is the generic representation of any code, be it
@@ -10,13 +11,13 @@ type CodeUnit struct {
 	Path           string // the absolute path to code file
 	Name           string // the name of function/view/trigger
 	Definition     string // the actual code
-	previousExists bool   // true if this code unit already exists in database
-	parseSignature bool   // true if we need to generate signature (for new functions)
+	PreviousExists bool   // true if this code unit already exists in database
+	ParseSignature bool   // true if we need to generate signature (for new functions)
 }
 
 // Drop is the generic drop function for code units.
 func (unit CodeUnit) Drop(dropQuery string) (err error) {
-	rows, err := Query(dropQuery)
+	rows, err := connection.Query(dropQuery)
 	if err != nil {
 		return err
 	}
@@ -27,7 +28,7 @@ func (unit CodeUnit) Drop(dropQuery string) (err error) {
 
 // Create is the eneric creation function for code units.
 func (unit CodeUnit) Create(definition string) (err error) {
-	rows, err := Query(definition)
+	rows, err := connection.Query(definition)
 	if err != nil {
 		return err
 	}

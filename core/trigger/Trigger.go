@@ -1,18 +1,22 @@
-package main
+package trigger
 
 import (
 	"fmt"
+	"github.com/oelmekki/pgrebase/core/codeunit"
+	"github.com/oelmekki/pgrebase/core/function"
+	"github.com/oelmekki/pgrebase/core/resolver"
+	"github.com/oelmekki/pgrebase/core/utils"
 	"io/ioutil"
 	"regexp"
 )
 
 // LoadTriggers loads or reloads all triggers found in FS.
 func LoadTriggers() (err error) {
-	successfulCount := len(Cfg.TriggerFiles)
+	successfulCount := len(conf.TriggerFiles)
 	errors := make([]string, 0)
 	bypass := make(map[string]bool)
 
-	files, err := ResolveDependencies(Cfg.TriggerFiles, Cfg.SqlDirPath+"triggers")
+	files, err := resolver.ResolveDependencies(conf.TriggerFiles, conf.SqlDirPath+"triggers")
 	if err != nil {
 		return err
 	}
@@ -24,7 +28,7 @@ func LoadTriggers() (err error) {
 		trigger.Path = file
 		triggers = append(triggers, &trigger)
 
-		err = DownPass(&trigger, trigger.Path)
+		err = codeunit.DownPass(&trigger, trigger.Path)
 		if err != nil {
 			successfulCount--
 			errors = append(errors, fmt.Sprintf("%v\n", err))
@@ -35,7 +39,7 @@ func LoadTriggers() (err error) {
 	for i := len(triggers) - 1; i >= 0; i-- {
 		trigger := triggers[i]
 		if _, ignore := bypass[trigger.Path]; !ignore {
-			err = UpPass(trigger, trigger.Path)
+			err = codeunit.UpPass(trigger, trigger.Path)
 			if err != nil {
 				successfulCount--
 				errors = append(errors, fmt.Sprintf("%v\n", err))
@@ -43,16 +47,16 @@ func LoadTriggers() (err error) {
 		}
 	}
 
-	Report("triggers", successfulCount, len(Cfg.TriggerFiles), errors)
+	utils.Report("triggers", successfulCount, len(conf.TriggerFiles), errors)
 
 	return
 }
 
 // Trigger is the code unit for triggers.
 type Trigger struct {
-	CodeUnit
-	Table    string   // name of the table for the trigger
-	Function Function // related function for trigger
+	codeunit.CodeUnit
+	Table    string            // name of the table for the trigger
+	Function function.Function // related function for trigger
 }
 
 // Load loads trigger definition from file.
@@ -75,7 +79,7 @@ func (trigger *Trigger) Parse() (err error) {
 		return fmt.Errorf("Can't find a trigger in %s", trigger.Path)
 	}
 
-	trigger.Function = Function{CodeUnit: CodeUnit{Definition: trigger.Definition, Path: trigger.Path}}
+	trigger.Function = function.Function{CodeUnit: codeunit.CodeUnit{Definition: trigger.Definition, Path: trigger.Path}}
 	trigger.Function.Parse()
 
 	trigger.Name = subMatches[1]

@@ -1,18 +1,21 @@
-package main
+package view
 
 import (
 	"fmt"
+	"github.com/oelmekki/pgrebase/core/codeunit"
+	"github.com/oelmekki/pgrebase/core/resolver"
+	"github.com/oelmekki/pgrebase/core/utils"
 	"io/ioutil"
 	"regexp"
 )
 
 // LoadViews loads or reloads all views found in FS.
 func LoadViews() (err error) {
-	successfulCount := len(Cfg.ViewFiles)
+	successfulCount := len(conf.ViewFiles)
 	errors := make([]string, 0)
 	bypass := make(map[string]bool)
 
-	files, err := ResolveDependencies(Cfg.ViewFiles, Cfg.SqlDirPath+"views")
+	files, err := resolver.ResolveDependencies(conf.ViewFiles, conf.SqlDirPath+"views")
 	if err != nil {
 		return err
 	}
@@ -24,7 +27,7 @@ func LoadViews() (err error) {
 		view.Path = file
 		views = append(views, &view)
 
-		err = DownPass(&view, view.Path)
+		err = codeunit.DownPass(&view, view.Path)
 		if err != nil {
 			successfulCount--
 			errors = append(errors, fmt.Sprintf("%v\n", err))
@@ -35,7 +38,7 @@ func LoadViews() (err error) {
 	for i := len(views) - 1; i >= 0; i-- {
 		view := views[i]
 		if _, ignore := bypass[view.Path]; !ignore {
-			err = UpPass(view, view.Path)
+			err = codeunit.UpPass(view, view.Path)
 			if err != nil {
 				successfulCount--
 				errors = append(errors, fmt.Sprintf("%v\n", err))
@@ -43,14 +46,14 @@ func LoadViews() (err error) {
 		}
 	}
 
-	Report("views", successfulCount, len(Cfg.ViewFiles), errors)
+	utils.Report("views", successfulCount, len(conf.ViewFiles), errors)
 
 	return
 }
 
 // View is the code unit for views.
 type View struct {
-	CodeUnit
+	codeunit.CodeUnit
 }
 
 // Load loads view definition from file.
