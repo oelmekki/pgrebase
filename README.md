@@ -170,3 +170,19 @@ code, please [let me know](https://github.com/oelmekki/pgrebase/issues)!
 PgRebase was born after discussing with Derek Sivers about moving business logic
 to the database. Make sure to read [his research](https://sivers.org/pg), it's
 awesome!
+
+## License
+
+<p xmlns:dct="http://purl.org/dc/terms/">
+  <a rel="license"
+     href="http://creativecommons.org/publicdomain/zero/1.0/">
+    <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+  </a>
+  <br />
+  To the extent possible under law,
+  <a rel="dct:publisher"
+     href="https://github.com/oelmekki/pgrebase">
+    <span property="dct:title">Olivier El Mekki</span></a>
+  has waived all copyright and related or neighboring rights to
+  <span property="dct:title">PgRebase</span>.
+</p>
