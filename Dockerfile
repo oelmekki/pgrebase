@@ -10,4 +10,4 @@ RUN go install -v ./...
 
 RUN apk del git
 
-CMD ["pgrebase"]
+ENTRYPOINT ["pgrebase"]
