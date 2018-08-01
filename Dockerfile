@@ -1,4 +1,4 @@
-FROM golang:alpine
+FROM golang:alpine as builder
 
 RUN apk add --no-cache git
 
@@ -8,6 +8,8 @@ COPY . .
 RUN go get -d -v ./...
 RUN go install -v ./...
 
-RUN apk del git
+FROM alpine:latest
+
+COPY --from=builder /go/bin/pgrebase /usr/local/bin/
 
 ENTRYPOINT ["pgrebase"]
