@@ -1,8 +1,11 @@
 # PgRebase
 
+> Note to Github user: development is now happening [on Gitlab](https://gitlab.com/oelmekki/pgrebase),
+> Github's repository is just a mirror. Please open any issue on Gitlab
+> rather than Github.
+
 PgRebase is a tool that allows you to easily handle your postgres codebase for
 functions, triggers and views.
-
 
 ## Why
 
@@ -16,8 +19,6 @@ then it's migrating servers / other devs installation that becomes difficult.
 The classic tool for this is the migration software, asking you to manage
 migration files. This is great for handling tables, not so great to make
 frequent changes to your functions. Can we do better?
-
-> Still confused about what the problem is here? See [this more in depth explanation](https://news.ycombinator.com/item?id=12976026) on Hacker News.
 
 
 ## What
@@ -50,15 +51,12 @@ after your migration task in your deployment pipeline.
 ## Install
 
 ```
-go get github.com/oelmekki/pgrebase
+go get gitlab.com/oelmekki/pgrebase
 ```
 
 Binary will be in `$GO_PATH/bin/pgrebase`. This is a static binary, so it's
 safe to copy it in your project (providing any system calling it is from the
 same architecture).
-
-You can also download prebuilt PgRelease [from release page](https://github.com/oelmekki/pgrebase/releases/)
-(only for linux/amd64).
 
 
 ## Usage
@@ -162,7 +160,7 @@ dependencies?" message and you will have to figure it out for yourself).
 Pgrebase is a fairly recent project. I already use it on production and it works
 fine for me, but given I'm probably its only user for now, it's probably biased
 toward how I write my sql code. If you find any problem while parsing your sql
-code, please [let me know](https://github.com/oelmekki/pgrebase/issues)!
+code, please [let me know](https://gitlab.com/oelmekki/pgrebase/-/issues)!
 
 
 ## Credits
@@ -181,7 +179,7 @@ awesome!
   <br />
   To the extent possible under law,
   <a rel="dct:publisher"
-     href="https://github.com/oelmekki/pgrebase">
+     href="https://gitlab.com/oelmekki/pgrebase">
     <span property="dct:title">Olivier El Mekki</span></a>
   has waived all copyright and related or neighboring rights to
   <span property="dct:title">PgRebase</span>.

@@ -3,8 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/oelmekki/pgrebase/core"
 	"os"
+
+	"github.com/oelmekki/pgrebase/core"
 )
 
 // Usage shows user how they're supposed to use application.
