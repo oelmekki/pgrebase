@@ -2,11 +2,12 @@ package function
 
 import (
 	"fmt"
-	"github.com/oelmekki/pgrebase/core/codeunit"
-	"github.com/oelmekki/pgrebase/core/connection"
 	"io/ioutil"
 	"regexp"
 	"strings"
+
+	"gitlab.com/oelmekki/pgrebase/core/codeunit"
+	"gitlab.com/oelmekki/pgrebase/core/connection"
 )
 
 // Function is the code unit for functions.

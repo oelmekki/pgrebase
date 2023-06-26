@@ -1,10 +1,11 @@
 package core
 
 import (
-	"github.com/oelmekki/pgrebase/core/config"
-	"github.com/oelmekki/pgrebase/core/utils"
 	"os"
 	"path/filepath"
+
+	"gitlab.com/oelmekki/pgrebase/core/config"
+	"gitlab.com/oelmekki/pgrebase/core/utils"
 )
 
 // sourceWalker type encapsulates fs walking functions.

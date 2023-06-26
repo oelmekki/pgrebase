@@ -2,11 +2,12 @@ package view
 
 import (
 	"fmt"
-	"github.com/oelmekki/pgrebase/core/codeunit"
-	"github.com/oelmekki/pgrebase/core/resolver"
-	"github.com/oelmekki/pgrebase/core/utils"
 	"io/ioutil"
 	"regexp"
+
+	"gitlab.com/oelmekki/pgrebase/core/codeunit"
+	"gitlab.com/oelmekki/pgrebase/core/resolver"
+	"gitlab.com/oelmekki/pgrebase/core/utils"
 )
 
 // LoadViews loads or reloads all views found in FS.

@@ -1,0 +1,14 @@
+stages:
+  - test
+
+sast:
+  stage: test
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+vet:
+  stage: test
+  image: golang:1.20
+  script:
+    go vet .

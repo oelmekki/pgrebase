@@ -1,9 +1,9 @@
 package core
 
 import (
-	"github.com/oelmekki/pgrebase/core/function"
-	"github.com/oelmekki/pgrebase/core/trigger"
-	"github.com/oelmekki/pgrebase/core/view"
+	"gitlab.com/oelmekki/pgrebase/core/function"
+	"gitlab.com/oelmekki/pgrebase/core/trigger"
+	"gitlab.com/oelmekki/pgrebase/core/view"
 )
 
 // Process loads sql code, just once.

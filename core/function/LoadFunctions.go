@@ -2,9 +2,10 @@ package function
 
 import (
 	"fmt"
-	"github.com/oelmekki/pgrebase/core/codeunit"
-	"github.com/oelmekki/pgrebase/core/resolver"
-	"github.com/oelmekki/pgrebase/core/utils"
+
+	"gitlab.com/oelmekki/pgrebase/core/codeunit"
+	"gitlab.com/oelmekki/pgrebase/core/resolver"
+	"gitlab.com/oelmekki/pgrebase/core/utils"
 )
 
 // LoadFunctions loads or reload all functions found in FS.

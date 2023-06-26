@@ -2,7 +2,8 @@ package core
 
 import (
 	"fmt"
-	"github.com/oelmekki/pgrebase/core/utils"
+
+	"gitlab.com/oelmekki/pgrebase/core/utils"
 )
 
 // Sanity type encapsulates requirement checks.

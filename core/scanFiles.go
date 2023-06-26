@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/oelmekki/pgrebase/core/config"
+	"gitlab.com/oelmekki/pgrebase/core/config"
 )
 
 // scanFiles scans sql directory for sql files.

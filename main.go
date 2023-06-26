@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/oelmekki/pgrebase/core"
+	"gitlab.com/oelmekki/pgrebase/core"
 )
 
 // Usage shows user how they're supposed to use application.

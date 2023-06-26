@@ -2,10 +2,11 @@ package core
 
 import (
 	"fmt"
-	"github.com/fsnotify/fsnotify"
-	"github.com/oelmekki/pgrebase/core/utils"
 	"os"
 	"path/filepath"
+
+	"github.com/fsnotify/fsnotify"
+	"gitlab.com/oelmekki/pgrebase/core/utils"
 )
 
 // watcher contains data for watching fs for code change.

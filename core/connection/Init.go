@@ -1,7 +1,7 @@
 package connection
 
 import (
-	"github.com/oelmekki/pgrebase/core/config"
+	"gitlab.com/oelmekki/pgrebase/core/config"
 )
 
 var conf *config.Config

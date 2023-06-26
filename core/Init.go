@@ -1,11 +1,11 @@
 package core
 
 import (
-	"github.com/oelmekki/pgrebase/core/config"
-	"github.com/oelmekki/pgrebase/core/connection"
-	"github.com/oelmekki/pgrebase/core/function"
-	"github.com/oelmekki/pgrebase/core/trigger"
-	"github.com/oelmekki/pgrebase/core/view"
+	"gitlab.com/oelmekki/pgrebase/core/config"
+	"gitlab.com/oelmekki/pgrebase/core/connection"
+	"gitlab.com/oelmekki/pgrebase/core/function"
+	"gitlab.com/oelmekki/pgrebase/core/trigger"
+	"gitlab.com/oelmekki/pgrebase/core/view"
 )
 
 // conf is the global level configuration data structure.

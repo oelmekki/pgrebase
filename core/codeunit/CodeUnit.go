@@ -2,7 +2,8 @@ package codeunit
 
 import (
 	"fmt"
-	"github.com/oelmekki/pgrebase/core/connection"
+
+	"gitlab.com/oelmekki/pgrebase/core/connection"
 )
 
 // CodeUnit is the generic representation of any code, be it

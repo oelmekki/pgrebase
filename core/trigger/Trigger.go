@@ -2,12 +2,13 @@ package trigger
 
 import (
 	"fmt"
-	"github.com/oelmekki/pgrebase/core/codeunit"
-	"github.com/oelmekki/pgrebase/core/function"
-	"github.com/oelmekki/pgrebase/core/resolver"
-	"github.com/oelmekki/pgrebase/core/utils"
 	"io/ioutil"
 	"regexp"
+
+	"gitlab.com/oelmekki/pgrebase/core/codeunit"
+	"gitlab.com/oelmekki/pgrebase/core/function"
+	"gitlab.com/oelmekki/pgrebase/core/resolver"
+	"gitlab.com/oelmekki/pgrebase/core/utils"
 )
 
 // LoadTriggers loads or reloads all triggers found in FS.
