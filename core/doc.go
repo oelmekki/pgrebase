@@ -3,7 +3,7 @@ Package core allows to use pgrebase as a library in your own code.
 
 To use it, your first need to initialize it:
 
-  err := core.Init(databaseUrl, sqlDir, watch)
+  err := core.Init(databaseUrl, sqlDir)
 
 databaseUrl is the postgres connection string, sqlDir is the path to your sql sources,
 and watch is a flag you can set to true to keep watching sqlDir for changes.
