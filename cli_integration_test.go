@@ -12,6 +12,7 @@ import (
 var dbConnectionScheme string
 
 func TestMain(m *testing.M) {
+	os.Setenv("QUIET", "true")
 
 	start := exec.Command("./test_data/reset_db.sh")
 	err := start.Run()

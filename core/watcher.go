@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
-	"gitlab.com/oelmekki/pgrebase/core/utils"
 )
 
 // watcher contains data for watching fs for code change.
@@ -35,12 +34,12 @@ func (w *watcher) Start() {
 
 // build finds all directories and watch them.
 func (w *watcher) build() (err error) {
-	if err = w.notify.Add(conf.SqlDirPath); err != nil {
+	if err = w.notify.Add(conf.sqlDirPath); err != nil {
 		return err
 	}
 
-	err = filepath.Walk(conf.SqlDirPath, func(path string, info os.FileInfo, err error) error {
-		if utils.IsDir(path) {
+	err = filepath.Walk(conf.sqlDirPath, func(path string, info os.FileInfo, err error) error {
+		if isDir(path) {
 			if err = w.notify.Add(path); err != nil {
 				return err
 			}
@@ -58,8 +57,10 @@ func (w *watcher) loop() {
 	for {
 		select {
 		case event := <-w.notify.Events:
-			if !utils.IsHiddenFile(event.Name) {
-				fmt.Printf("\nFS changed. Building.\n")
+			if !isHiddenFile(event.Name) {
+				if os.Getenv("QUIET") != "true" {
+					fmt.Printf("\nFS changed. Building.\n")
+				}
 				w.Done <- true
 				return
 			}

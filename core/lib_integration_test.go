@@ -12,6 +12,8 @@ import (
 var dbConnectionScheme string
 
 func TestMain(m *testing.M) {
+	os.Setenv("QUIET", "true")
+
 	start := exec.Command("../test_data/reset_db.sh")
 	err := start.Run()
 	if err != nil {
@@ -41,7 +43,7 @@ func TestMain(m *testing.M) {
 	exitVal = m.Run()
 }
 
-func query(query string, parameters ...interface{}) (Rows *sql.Rows, err error) {
+func test_query(query string, parameters ...interface{}) (Rows *sql.Rows, err error) {
 	var co *sql.DB
 	co, err = sql.Open("postgres", dbConnectionScheme)
 	if err != nil {
@@ -70,7 +72,7 @@ func TestLoadingAFunction(t *testing.T) {
 		t.Fatalf("Can't process : %v", err)
 	}
 
-	rows, err := query("SELECT test_function()")
+	rows, err := test_query("SELECT test_function()")
 	if err != nil {
 		t.Fatalf("Can't query : %v", err)
 	}
@@ -85,7 +87,7 @@ func TestLoadingAFunction(t *testing.T) {
 
 func TestLoadingAView(t *testing.T) {
 	t.Cleanup(func() {
-		rows, err := query("DELETE FROM users")
+		rows, err := test_query("DELETE FROM users")
 		if err != nil {
 			t.Fatalf("Can't query : %v", err)
 		}
@@ -102,14 +104,14 @@ func TestLoadingAView(t *testing.T) {
 		t.Fatalf("Can't process : %v", err)
 	}
 
-	rows, err := query("INSERT INTO users(name, bio) VALUES('John Doe', 'John Doe does stuff.')")
+	rows, err := test_query("INSERT INTO users(name, bio) VALUES('John Doe', 'John Doe does stuff.')")
 	if err != nil {
 		fmt.Printf("Can't create mock record : %v\n", err)
 		t.Fatalf("Can't insert test record.")
 	}
 	rows.Close()
 
-	rows, err = query("SELECT * FROM test_view")
+	rows, err = test_query("SELECT * FROM test_view")
 	if err != nil {
 		t.Fatalf("Can't query : %v", err)
 	}
@@ -139,7 +141,7 @@ func TestLoadingAView(t *testing.T) {
 
 func TestLoadingATrigger(t *testing.T) {
 	t.Cleanup(func() {
-		rows, err := query("DELETE FROM users")
+		rows, err := test_query("DELETE FROM users")
 		if err != nil {
 			t.Fatalf("Can't query : %v", err)
 		}
@@ -156,14 +158,14 @@ func TestLoadingATrigger(t *testing.T) {
 		t.Fatalf("Can't process : %v", err)
 	}
 
-	rows, err := query("INSERT INTO users(name, bio) VALUES('John Doe', 'John Doe does stuff.')")
+	rows, err := test_query("INSERT INTO users(name, bio) VALUES('John Doe', 'John Doe does stuff.')")
 	if err != nil {
 		fmt.Printf("Can't create mock record : %v\n", err)
 		t.Fatalf("Can't insert test record.")
 	}
 	rows.Close()
 
-	rows, err = query("SELECT active FROM users")
+	rows, err = test_query("SELECT active FROM users")
 	if err != nil {
 		t.Fatalf("Can't query : %v", err)
 	}
@@ -221,7 +223,7 @@ func TestLoadingWithWatcher(t *testing.T) {
 		t.Fatalf("Can't load with dependencies : %v", err)
 	}
 
-	rows, err := query("INSERT INTO users(name, bio) VALUES('John Doe', 'John Doe does stuff.')")
+	rows, err := test_query("INSERT INTO users(name, bio) VALUES('John Doe', 'John Doe does stuff.')")
 	if err != nil {
 		t.Fatalf("Can't insert test record : %v.", err)
 	}
@@ -248,14 +250,14 @@ func TestLoadingWithWatcher(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	rows, err = query("INSERT INTO users(name, bio) VALUES('John Doe', 'John Doe does stuff.')")
+	rows, err = test_query("INSERT INTO users(name, bio) VALUES('John Doe', 'John Doe does stuff.')")
 	if err != nil {
 		fmt.Printf("Can't create mock record : %v\n", err)
 		t.Fatalf("Can't insert test record.")
 	}
 	rows.Close()
 
-	rows, err = query("SELECT * FROM test_view")
+	rows, err = test_query("SELECT * FROM test_view")
 	if err != nil {
 		t.Fatalf("Can't query : %v", err)
 	}
