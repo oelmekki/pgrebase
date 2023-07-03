@@ -1,3 +1,2 @@
-/pkg
-/sql
-/bin
+/pgrebase
+/test_data/pg

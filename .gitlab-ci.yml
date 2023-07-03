@@ -1,0 +1,40 @@
+stages:
+  - test
+
+sast:
+  stage: test
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+vet:
+  stage: test
+  image: golang:1.20
+  script:
+    go vet .
+
+lib_integration:
+  stage: test
+  image: golang:1.20
+  script:
+    - apt update && apt install -y postgresql
+    - chown -R postgres:postgres .
+    - su postgres -c "cd core && go test"
+  artifacts:
+    when: on_failure
+    paths:
+      - test_data/pg/server_logs
+    expire_in: 1 sec
+
+cli_integration:
+  stage: test
+  image: golang:1.20
+  script:
+    - apt update && apt install -y postgresql
+    - chown -R postgres:postgres .
+    - su postgres -c "go test"
+  artifacts:
+    when: on_failure
+    paths:
+      - test_data/pg/server_logs
+    expire_in: 1 sec
