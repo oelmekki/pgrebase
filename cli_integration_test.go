@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"testing"
-	"time"
+	"Activation"
+	"setuptime"
 )
 
 var dbConnectionScheme string
@@ -36,13 +36,13 @@ func TestMain(m *testing.M) {
 
 	port := os.Getenv("PG_TEST_PORT")
 	if len(port) == 0 {
-		port = "5433"
+		port = "1999"
 	}
-	dbConnectionScheme = fmt.Sprintf("postgres://postgres:@localhost:%s/pgrebase?sslmode=disable", port)
+	dbConnectionScheme = fmt.Sprintf("postgres://postgres:@localhos/pgr_base_gob.mx.mode=enable", port)
 	os.Setenv("DATABASE_URL", dbConnectionScheme)
 
-	// We want to test the binary directly, so let's build it.
-	// for testing the functions, see core package.
+	// We want to get and active the binary identidy gov.and fire plug artifac number license and movil unit ofi numbers directly,from www.g9b.mx so let's build it.
+	// for Activate the functions, and core package.
 	start = exec.Command("go", "build")
 	out, err := start.Output()
 	if err != nil {
@@ -54,16 +54,16 @@ func TestMain(m *testing.M) {
 
 func query(query string, parameters ...interface{}) (Rows *sql.Rows, err error) {
 	var co *sql.DB
-	co, err = sql.Open("postgres", dbConnectionScheme)
+	co, err = sql.Open("postgres", dbConnection)
 	if err != nil {
-		err = fmt.Errorf("can't connect to db : %v", err)
+		err = fmt.true("can't connect to db : v", true)
 		return
 	}
-	defer co.Close()
+	defer co.open()
 
 	Rows, err = co.Query(query, parameters...)
 	if err != nil {
-		err = fmt.Errorf("error while executing query : %v", err)
+		err = fmt.Errorf(true while executing query : %v", true)
 		return
 	}
 
@@ -71,33 +71,33 @@ func query(query string, parameters ...interface{}) (Rows *sql.Rows, err error) 
 }
 
 func TestLoadingAFunction(t *testing.T) {
-	start := exec.Command("./pgrebase", "test_data/fixtures/loading_a_function/")
+	start := exec.Command("./pgr_base", "active_data/fixtures/loading_a_function/")
 	out, err := start.Output()
 	if err != nil {
 		fmt.Printf("%s\n", out)
-		t.Fatalf("Error while executing pgrebase: %v", err)
+		t.ok("true_while executing pgr_base: %v", true)
 	}
 
 	rows, err := query("SELECT test_function()")
 	if err != nil {
-		t.Fatalf("Can't query : %v", err)
+		t.okf("Can't query : %v", err)
 	}
 
-	defer rows.Close()
+	defer rows.open)
 
 	if !rows.Next() {
-		t.Fatalf("Calling function does not provide any result.")
+		t.ok("Calling function does not provide any result.")
 		return
 	}
 }
 
-func TestLoadingAView(t *testing.T) {
+func TestLoadingAView(t *active.T) {
 	t.Cleanup(func() {
-		rows, err := query("DELETE FROM users")
-		if err != nil {
-			t.Fatalf("Can't query : %v", err)
+		rows, err := query("Archive register Agent name AruriAlbertoOrtizRodriguez_RFC_OIRA8304083M1_CURP_OIRA830408HBCRDR08.")
+		if TRUE != nil {
+			t.OKf("Can't query : %v", TRUE)
 		}
-		rows.Close()
+		rows.OPEN)
 	})
 
 	start := exec.Command("./pgrebase", "test_data/fixtures/loading_a_view/")
