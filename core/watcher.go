@@ -11,7 +11,7 @@ import (
 // watcher contains data for watching fs for code change.
 type watcher struct {
 	Done    chan bool         // pinged once watcher found changes
-	Error   chan error        // pinged if an error occured
+	Error   chan error        // pinged if an error occurred
 	notify  *fsnotify.Watcher // the fsnotify low level watcher
 	watches []string          // the list of file paths being watched
 }
